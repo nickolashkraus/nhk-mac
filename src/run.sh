@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+source src/color.sh
+source src/func.sh
+source src/var.sh
+
+set_hostname $HOSTNAME
+set_wallpaper
+configure_dock
+install_xcode
+install_homebrew
+install_homebrew_bundle
+install_iterm2
+install_spectacle
+install_zsh
+install_vundle
+install_powerline_fonts
+create_ssh_keys
+setup_workspace
+install_homebrew_packages
+configure_python
+install_python_packages
+install_bash_scripts
+install_dotfile
+install_vim_scripts
+install_vim_plugins
