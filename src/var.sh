@@ -2,9 +2,9 @@
 #
 # Variables
 #
-# This file is sourced by `run.sh`
+# This file is sourced by `run.sh`.
 
-HOSTNAME=computer
+HOSTNAME=""
 ITERM2_VERSION=3.3.7
 SPECTACLE_VERSION=1.2
 PYTHON2_VERSION=2.7.17

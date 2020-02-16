@@ -4,8 +4,9 @@ source src/color.sh
 source src/func.sh
 source src/var.sh
 
-set_hostname $HOSTNAME
+set_hostname
 set_wallpaper
+configure_macos
 configure_dock
 install_xcode
 install_homebrew
@@ -24,3 +25,4 @@ install_bash_scripts
 install_dotfile
 install_vim_scripts
 install_vim_plugins
+install_ycm

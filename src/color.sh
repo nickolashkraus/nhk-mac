@@ -2,7 +2,7 @@
 #
 # Colors
 #
-# This file is sourced by `run.sh`
+# This file is sourced by `run.sh`.
 
 BLACK="\033[0;30m"
 RED="\033[0;31m"
