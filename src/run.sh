@@ -25,4 +25,5 @@ install_bash_scripts
 install_dotfile
 install_vim_scripts
 install_vim_plugins
+install_fzf
 install_ycm

@@ -251,6 +251,13 @@ function install_vim_plugins {
   vim +PluginInstall +qall
 }
 
+function install_fzf {
+  echo_c "Installing fzf..." "${WHITE}"
+  if [ ! -f $HOME/.fzf.zsh ]; then
+    $(brew --prefix)/opt/fzf/install
+  fi
+}
+
 function install_ycm {
   echo_c "Installing YouCompleteMe..." "${WHITE}"
   cd $HOME/.vim/bundle/YouCompleteMe
