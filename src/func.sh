@@ -111,6 +111,8 @@ function install_zsh {
     git clone https://github.com/NickolasHKraus/oh-my-zsh $HOME/.oh-my-zsh
     cd $HOME/.oh-my-zsh
     git remote add upstream git@github.com:robbyrussell/oh-my-zsh.git
+    git remote remove origin
+    git remote add origin git@github.com:NickolasHKraus/oh-my-zsh.git
     cd $HOME
   fi
 }
