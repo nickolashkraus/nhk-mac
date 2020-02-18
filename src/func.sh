@@ -125,7 +125,7 @@ function install_vundle {
 }
 
 function install_powerline_fonts {
-  if [ ! -d $HOME/Library/Fonts ]; then
+  if [ ! "$(ls $HOME/Library/Fonts)" ]; then
     echo_c "Installing Powerline fonts..." "${WHITE}"
     git clone https://github.com/powerline/fonts.git --depth=1
     cd fonts
@@ -207,6 +207,7 @@ function configure_python {
   export WORKON_HOME=$HOME/.virtualenvs
   export VIRTUALENVWRAPPER_PYTHON=$HOME/.pyenv/shims/python
   export VIRTUALENVWRAPPER_VIRTUALENV=$HOME/.pyenv/shims/virtualenv
+  export PYTHON_CONFIGURE_OPTS="--enable-framework"
   echo_c "Installing Python ${PYTHON2_VERSION} via pyenv..." $WHITE
   pyenv install $PYTHON2_VERSION
   echo_c "Installing Python ${PYTHON3_VERSION} via pyenv..." $WHITE
