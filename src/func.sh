@@ -201,12 +201,11 @@ function install_homebrew_packages {
 }
 
 function configure_python {
-  echo_c "Installing virtualenv and virtualenvwrapper..." $WHITE
-  pip install virtualenv virtualenvwrapper
   echo_c "Configuring virtualenv and virtualenvwrapper..." $WHITE
   export WORKON_HOME=$HOME/.virtualenvs
   export VIRTUALENVWRAPPER_PYTHON=$HOME/.pyenv/shims/python
   export VIRTUALENVWRAPPER_VIRTUALENV=$HOME/.pyenv/shims/virtualenv
+  # '--enable-framework' option is required by YouCompleteMe
   export PYTHON_CONFIGURE_OPTS="--enable-framework"
   echo_c "Installing Python ${PYTHON2_VERSION} via pyenv..." $WHITE
   pyenv install $PYTHON2_VERSION
@@ -215,10 +214,14 @@ function configure_python {
   echo_c "Creating virtual environments..." $WHITE
   eval "$(pyenv init -)"
   pyenv shell $PYTHON2_VERSION
+  echo_c "Installing virtualenv and virtualenvwrapper..." $WHITE
+  pip install virtualenv virtualenvwrapper
   pyenv virtualenvwrapper
   mkvirtualenv dev2
   deactivate
   pyenv shell $PYTHON3_VERSION
+  echo_c "Installing virtualenv and virtualenvwrapper..." $WHITE
+  pip install virtualenv virtualenvwrapper
   pyenv virtualenvwrapper
   mkvirtualenv dev3
 }
