@@ -265,5 +265,5 @@ function install_fzf {
 function install_ycm {
   echo_c "Installing YouCompleteMe..." "${WHITE}"
   cd $HOME/.vim/bundle/YouCompleteMe
-  ./install.py --clang-completer
+  ./install.py --clang-completer --go-completer
 }
