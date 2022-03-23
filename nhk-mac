@@ -10,4 +10,4 @@
 #
 #          nhk-mac is a CLI for quickly setting up a new workstation.
 
-source src/run.sh
+source src/run

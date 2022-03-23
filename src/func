@@ -2,7 +2,7 @@
 #
 # Functions
 #
-# This file is sourced by `run.sh`.
+# This file is sourced by `run`.
 
 function echo_c {
   echo -en "${2}"
@@ -19,7 +19,7 @@ function usage {
 function set_hostname {
   echo_c "Setting hostname..." "${WHITE}"
   if [ -z $HOSTNAME ]; then
-    echo_c "Error: Provide HOSTNAME in \`var.sh\`." "${RED}"
+    echo_c "Error: Provide HOSTNAME in \`var\`." "${RED}"
     exit 1
   fi
   sudo scutil --set HostName "${HOSTNAME}"

@@ -2,7 +2,7 @@
 #
 # Variables
 #
-# This file is sourced by `run.sh`.
+# This file is sourced by `run`.
 
 HOSTNAME=""
 ITERM2_VERSION=3.3.7

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-source src/color.sh
-source src/func.sh
-source src/var.sh
+source src/color
+source src/func
+source src/var
 
 set_hostname
 set_wallpaper
