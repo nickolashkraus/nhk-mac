@@ -1,15 +1,15 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
-# Colors
+# COLORS
 #
 # This file is sourced by `run`.
 
-BLACK="\033[0;30m"
-RED="\033[0;31m"
-GREEN="\033[0;32m"
-YELLOW="\033[0;33m"
-BLUE="\033[0;34m"
-PURPLE="\033[0;35m"
-CYAN="\033[0;36m"
-WHITE="\033[0;37m"
-RESET="\033[0m"
+export BLACK="\033[0;30m"
+export RED="\033[0;31m"
+export GREEN="\033[0;32m"
+export YELLOW="\033[0;33m"
+export BLUE="\033[0;34m"
+export PURPLE="\033[0;35m"
+export CYAN="\033[0;36m"
+export WHITE="\033[0;37m"
+export RESET="\033[0m"
