@@ -8,6 +8,6 @@
 #
 #                              Welcome to nhk-mac.
 #
-#          nhk-mac is a CLI for quickly setting up a new workstation.
+#       nhk-mac is a CLI for quickly setting up a new macOS workstation.
 
 source src/run

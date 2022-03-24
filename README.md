@@ -6,8 +6,7 @@
         | | | | | | |   <_____| | | | | | (_| | (__
         |_| |_|_| |_|_|\_\    |_| |_| |_|\__,_|\___|
 
-
-A CLI for quickly setting up a new workstation.
+A CLI for quickly setting up a new macOS workstation.
 
 ## Usage
 
