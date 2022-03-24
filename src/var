@@ -1,11 +1,8 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
-# Variables
+# VARIABLES
 #
 # This file is sourced by `run`.
 
-HOSTNAME=""
-ITERM2_VERSION=3.3.7
-SPECTACLE_VERSION=1.2
-PYTHON2_VERSION=2.7.17
-PYTHON3_VERSION=3.8.1
+export HOSTNAME="Nickolas-Kraus"
+export PYTHON_VERSION='3.10.0'
