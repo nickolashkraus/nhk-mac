@@ -1,29 +1,37 @@
-#!/usr/bin/env bash
+#!/bin/bash
+#
+# RUN
+#
+# Execute all functions defined in `func`.
 
 source src/color
 source src/func
 source src/var
 
+welcome
+check_sip
 set_hostname
-set_wallpaper
-configure_macos
+configure_keyboard
 configure_dock
 install_xcode
 install_homebrew
 install_homebrew_bundle
 install_iterm2
-install_spectacle
-install_zsh
+install_oh_my_zsh
 install_vundle
 install_powerline_fonts
-create_ssh_keys
-setup_workspace
+generate_ssh_keys
+set_up_workspace
 install_homebrew_packages
-configure_python
+install_java
+install_python
+set_up_virtualenv
 install_python_packages
 install_bash_scripts
-install_dotfile
+install_dotfiles
 install_vim_scripts
 install_vim_plugins
 install_fzf
 install_ycm
+install_yabai
+install_skhd

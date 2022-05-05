@@ -1,269 +1,822 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
-# Functions
+# FUNCTIONS
 #
 # This file is sourced by `run`.
+#
+# For global color variables (WHITE, RED, RESET, etc.), see `color`.
 
-function echo_c {
+###############################################################################
+# Write string to the standard output with color.
+#
+# Globals:
+#   None
+# Arguments:
+#   $1: string
+#   $2: color (see `color`). If not provided, string is output without color
+# Outputs:
+#   String to the standard output with color
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function echo_c() {
   echo -en "${2}"
   echo "${1}"
   echo -en "${RESET}"
 }
 
-function usage {
+###############################################################################
+# Print usage.
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Usage to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function usage() {
   echo_c
   echo_c "Usage: nhk-mac" "${WHITE}"
   echo_c
 }
 
-function set_hostname {
+###############################################################################
+# Print welcome.
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Usage to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function welcome() {
+  echo_c "                                                                    " "${WHITE}"
+  echo_c "                      _     _                                       " "${RED}"
+  echo_c "                _ __ | |__ | | __     _ __ ___   __ _  ___          " "${YELLOW}"
+  echo_c "               | '_ \| '_ \| |/ /____| '_ \` _ \ / _\` |/ __|       " "${GREEN}"
+  echo_c "               | | | | | | |   <_____| | | | | | (_| | (__          " "${CYAN}"
+  echo_c "               |_| |_|_| |_|_|\_\    |_| |_| |_|\__,_|\___|         " "${BLUE}"
+  echo_c "                                                                    " "${WHITE}"
+  echo_c "                           Welcome to nhk-mac.                      " "${WHITE}"
+  echo_c "                                                                    " "${WHITE}"
+  echo_c "    nhk-mac is a CLI for quickly setting up a new macOS workstation." ""
+  echo_c "                                                                    " "${WHITE}"
+}
+
+###############################################################################
+# Check System Integrity Protection status.
+#
+# From the yabai documentation...
+#
+#   System Integrity Protection ("rootless") is a security feature of macOS
+#   first introduced in 10.13, then further locked down in 10.14.
+#
+#   System Integrity Protection protects some files and directories from being
+#   modified — even from the root user. yabai needs System Integrity Protection
+#   to be (partially) disabled so that it can inject a scripting addition into
+#   Dock.app, which owns the sole connection to the macOS window server. Many
+#   features of yabai require this scripting addition to be running such that
+#   yabai can modify windows, spaces and displays in a way that otherwise only
+#   Dock.app could.
+#
+# Source: https://github.com/koekeishiya/yabai/wiki/Disabling-System-Integrity-Protection
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Usage to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function check_sip() {
+  echo_c "##############################################" "${WHITE}"
+  echo_c "Checking System Integrity Protection status..." "${WHITE}"
+  echo_c "##############################################" "${WHITE}"
+  output=$(csrutil status)
+  if [[ "${output}" =~ enabled ]]; then
+    echo_c "  • System Integrity Protection is enabled." "${YELLOW}"
+    echo_c "  • Run \`csrutil disable\` in macOS Recovery to disable SIP." "${YELLOW}"
+    echo_c ""
+    echo_c "  • On Apple silicon, add the -arm64e_preview_abi boot arg to your system:" "${YELLOW}"
+    echo_c "      nvram boot-args=-arm64e_preview_abi" "${YELLOW}"
+    exit 1
+  else
+    echo_c "  • System Integrity Protection is disabled." "${GREEN}"
+  fi
+  echo_c ""
+}
+
+###############################################################################
+# Set system hostname via `scutil`.
+#
+# Globals:
+#   HOSTNAME (see `var`)
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if HOSTNAME is not set or an error occurs
+###############################################################################
+function set_hostname() {
+  echo_c "###################" "${WHITE}"
   echo_c "Setting hostname..." "${WHITE}"
-  if [ -z $HOSTNAME ]; then
-    echo_c "Error: Provide HOSTNAME in \`var\`." "${RED}"
+  echo_c "###################" "${WHITE}"
+  echo_c "  • Setting hostname to ${HOSTNAME}"
+  if [ -z "${HOSTNAME}" ]; then
+    echo_c "ERROR: HOSTNAME must be set in \`var\`." "${RED}"
     exit 1
   fi
   sudo scutil --set HostName "${HOSTNAME}"
+  echo_c ""
 }
 
-function set_wallpaper {
-  echo_c "Setting wallpaper..." "${WHITE}"
-  db="$HOME/Library/Application Support/Dock/desktoppicture.db"
-  val_0=0
-  val_1=1
-  val_2=0.0841198042035103
-  val_3=0.084135964512825
-  val_4=0.0841171219944954
-  val_5="'$(sudo find /System/Library -type d -name "*Solid Colors" 2>/dev/null)'"
-  val_6="'$(sudo find /System/Library -type f -name "*Transparent.tiff" 2>/dev/null)'"
-  sqlite3 "$db" "DELETE FROM data;"
-  sqlite3 "$db" "INSERT INTO data(value) VALUES ($val_5), ($val_0), ($val_1), ($val_6), ($val_2), ($val_3), ($val_4);" && \
-  killall Dock
-}
-
-function configure_macos {
-  echo_c "Configuring macOS..." $WHITE
+###############################################################################
+# Set keyboard behavior via `defaults`.
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+#
+# The `defaults` command provides access to the Mac OS X user defaults system.
+###############################################################################
+function configure_keyboard() {
+  echo_c "#######################" "${WHITE}"
+  echo_c "Configuring keyboard..." "${WHITE}"
+  echo_c "#######################" "${WHITE}"
+  # The '-g' option specifies the global domain.
+  #
+  # See the man pages for `defaults` for further details.
+  echo_c "  • Disabling 'Press and Hold' for special characters"
   defaults write -g ApplePressAndHoldEnabled -bool false
+  echo_c "  • Setting initial key repeat to 15 (225 ms). Default 15 (225 ms)"
   defaults write -g InitialKeyRepeat -int 15
-  defaults write -g KeyRepeat -int 1
+  echo_c "  • Setting key repeat to 2 (30 ms). Default 2 (30 ms)"
+  defaults write -g KeyRepeat -int 2
+  echo_c ""
 }
 
-function configure_dock {
+###############################################################################
+# Set Dock appearance via `defaults`.
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+#
+# The `defaults` command provides access to the Mac OS X user defaults system.
+###############################################################################
+function configure_dock() {
+  echo_c "###################" "${WHITE}"
   echo_c "Configuring Dock..." "${WHITE}"
-  defaults write com.apple.dock autohide -bool true
-  defaults write com.apple.dock autohide-delay -int 0
-  defaults write com.apple.dock autohide-time-modifier -int 0
-  defaults write com.apple.dock persistent-apps -array
-  defaults write com.apple.dock persistent-others -array
-  defaults write com.apple.dock recent-apps -array
-  defaults write com.apple.dock show-recent -bool false
-  defaults write com.apple.dock tilesize -int 32
+  echo_c "###################" "${WHITE}"
+  echo_c "  • Setting orientation to left"
   defaults write com.apple.dock 'orientation' -string 'left'
+  echo_c "  • Enabling auto hide"
+  defaults write com.apple.dock autohide -bool true
+  echo_c "  • Setting auto hide opening delay to 0 seconds"
+  defaults write com.apple.dock autohide-delay -int 0
+  echo_c "  • Setting auto hide opening and closing animation to 0 seconds"
+  defaults write com.apple.dock autohide-time-modifier -int 0
+  echo_c "  • Removing persistent apps"
+  defaults write com.apple.dock persistent-apps -array
+  echo_c "  • Removing persistent app stacks"
+  defaults write com.apple.dock persistent-others -array
+  echo_c "  • Removing recent apps"
+  defaults write com.apple.dock recent-apps -array
+  echo_c "  • Disabling recent apps"
+  defaults write com.apple.dock show-recent -bool false
+  echo_c "  • Setting app size to 32"
+  defaults write com.apple.dock tilesize -int 32
   killall Dock
+  echo_c ""
 }
 
-function install_xcode {
+###############################################################################
+# Install Git (git) (via Xcode Developer Tools) if it is not already installed.
+#
+# Apple ships a binary package of Git with Xcode:
+#   * https://git-scm.com/download/mac
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_xcode() {
+  echo_c "###################################" "${WHITE}"
+  echo_c "Installing Xcode Developer Tools..." "${WHITE}"
+  echo_c "###################################" "${WHITE}"
   if [ ! -x "$(command -v git)" ]; then
-    echo_c "Installing Xcode Developer Tools..." "${WHITE}"
     xcode-select --install
-    echo_c "Press ENTER to continue."
-    read -n 1
+    echo_c "Press ENTER to continue." "${WHITE}"
+    read -rn 1
+    echo_c "  • Xcode Developer Tools installed" "${WHITE}"
+  else
+    echo_c "  • Xcode Developer Tools already installed" "${GREEN}"
   fi
+  echo_c ""
 }
 
-function install_homebrew {
+###############################################################################
+# Install Homebrew (brew) if it is not already installed.
+#
+# Homebrew: https://brew.sh
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_homebrew() {
+  echo_c "######################" "${WHITE}"
+  echo_c "Installing Homebrew..." "${WHITE}"
+  echo_c "######################" "${WHITE}"
   if [ ! -x "$(command -v brew)" ]; then
-    echo_c "Installing Homebrew..." "${WHITE}"
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-  echo_c "Updating Homebrew..." "${WHITE}"
-  brew update
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    echo_c "  • Homebrew installed" "${WHITE}"
+  else
+    echo_c "  • Homebrew already installed" "${GREEN}"
   fi
+  echo_c "  • Updating Homebrew..."
+  brew update >/dev/null 2>&1
+  echo_c ""
 }
 
-function install_homebrew_bundle {
+###############################################################################
+# Install Homebrew Bundle (brew bundle) if it is not already installed.
+#
+# Homebrew Bundle: https://github.com/Homebrew/homebrew-bundle
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_homebrew_bundle() {
+  echo_c "#############################" "${WHITE}"
   echo_c "Installing Homebrew Bundle..." "${WHITE}"
-  brew bundle
+  echo_c "#############################" "${WHITE}"
+  # brew bundle is automatically installed when first run.
+  if brew bundle >/dev/null 2>&1; then
+    echo_c "  • Homebrew Bundle installed" "${WHITE}"
+  else
+    echo_c "  • Homebrew Bundle already installed" "${GREEN}"
+  fi
+  echo_c ""
 }
 
-function install_iterm2 {
-  if [ ! -d /Applications/iTerm.app ]; then
-    echo_c "Installing iTerm2..." "${WHITE}"
-    ITERM2_VERSION=$(echo $ITERM2_VERSION | sed 's/\./_/g')
-    curl -LOk https://iterm2.com/downloads/stable/iTerm2-$ITERM2_VERSION.zip
-    unzip -q iTerm2-$ITERM2_VERSION.zip
+###############################################################################
+# Install iTerm2 if it is not already installed.
+#
+# iTerm2: https://iterm2.com
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_iterm2() {
+  echo_c "####################" "${WHITE}"
+  echo_c "Installing iTerm2..." "${WHITE}"
+  echo_c "####################" "${WHITE}"
+  if [ ! -d '/Applications/iTerm.app' ]; then
+    curl -L https://iterm2.com/downloads/stable/latest -o iterm2.zip
+    unzip -q iterm2.zip
     mv iTerm.app /Applications
-    rm iTerm2-$ITERM2_VERSION.zip
+    rm iterm2.zip
+    echo_c "  • iTerm2 installed" "${WHITE}"
+  else
+    echo_c "  • iTerm2 already installed" "${GREEN}"
   fi
+  echo_c ""
 }
 
-function install_spectacle {
-  if [ ! -d /Applications/Spectacle.app ]; then
-    echo_c "Installing Spectacle..." "${WHITE}"
-    curl -LOk https://s3.amazonaws.com/spectacle/downloads/Spectacle+$SPECTACLE_VERSION.zip
-    unzip -q Spectacle+$SPECTACLE_VERSION.zip
-    mv Spectacle.app /Applications
-    rm Spectacle+$SPECTACLE_VERSION.zip
+###############################################################################
+# Install Oh My Zsh if it is not already installed.
+#
+# Oh My Zsh: https://ohmyz.sh
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_oh_my_zsh() {
+  echo_c "#######################" "${WHITE}"
+  echo_c "Installing Oh My Zsh..." "${WHITE}"
+  echo_c "#######################" "${WHITE}"
+  if [ ! -d "${HOME}/.oh-my-zsh" ]; then
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    echo_c "  • Oh My Zsh installed" "${WHITE}"
+  else
+    echo_c "  • Oh My Zsh already installed" "${GREEN}"
   fi
+  echo_c ""
 }
 
-function install_zsh {
-  if [ ! -d $HOME/.oh-my-zsh ]; then
-    echo_c "Installing Zsh..." "${WHITE}"
-    git clone https://github.com/NickolasHKraus/oh-my-zsh $HOME/.oh-my-zsh
-    cd $HOME/.oh-my-zsh
-    git remote add upstream git@github.com:robbyrussell/oh-my-zsh.git
-    git remote remove origin
-    git remote add origin git@github.com:NickolasHKraus/oh-my-zsh.git
-    cd $HOME
+###############################################################################
+# Install Vundle if it is not already installed.
+#
+# Vundle: https://github.com/VundleVim/Vundle.vim
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_vundle() {
+  echo_c "####################" "${WHITE}"
+  echo_c "Installing Vundle..." "${WHITE}"
+  echo_c "####################" "${WHITE}"
+  if [ ! -d "${HOME}/.vim/bundle/Vundle.vim" ]; then
+    git clone https://github.com/VundleVim/Vundle.vim.git "${HOME}/.vim/bundle/Vundle.vim"
+    echo_c "  • Vundle installed" "${WHITE}"
+  else
+    echo_c "  • Vundle already installed" "${GREEN}"
   fi
+  echo_c ""
 }
 
-function install_vundle {
-  if [ ! -d $HOME/.vim/bundle/Vundle.vim ]; then
-    echo_c "Installing Vundle..." "${WHITE}"
-    git clone https://github.com/VundleVim/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim
-  fi
-}
-
-function install_powerline_fonts {
-  if [ ! "$(ls $HOME/Library/Fonts)" ]; then
-    echo_c "Installing Powerline fonts..." "${WHITE}"
+###############################################################################
+# Install Powerline fonts if they are not already installed.
+#
+# Powerline fonts: https://github.com/powerline/fonts
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_powerline_fonts() {
+  echo_c "#############################" "${WHITE}"
+  echo_c "Installing Powerline fonts..." "${WHITE}"
+  echo_c "#############################" "${WHITE}"
+  if [ ! -d "${HOME}/Library/Fonts" ]; then
     git clone https://github.com/powerline/fonts.git --depth=1
-    cd fonts
+    pushd fonts >/dev/null || exit
     ./install.sh
-    cd ..
+    popd >/dev/null || exit
     rm -rf fonts
-  fi
-}
-
-function create_ssh_keys {
-  echo_c "Creating SSH keys..." "${WHITE}"
-  mkdir -p $HOME/.ssh
-  if [ ! -f $HOME/.ssh/id_rsa ]; then
-    ssh-keygen -b 2048 -t rsa -f $HOME/.ssh/id_rsa -P ""
-    chmod 400 $HOME/.ssh/id_rsa
+    echo_c "  • Powerline fonts installed" "${WHITE}"
   else
-    echo_c "SSH keys already exist." $GREEN
+    echo_c "  • Powerline fonts already installed" "${GREEN}"
   fi
-  echo_c "Add your public key to GitHub, GitLab, or Bitbucket." $YELLOW
-  cat $HOME/.ssh/id_rsa.pub
-  echo_c "Press ENTER to continue."
-  read -n 1
+  echo_c ""
 }
 
-function setup_workspace {
+###############################################################################
+# Generate SSH key pair (id_rsa, id_rsa.pub) if it does not exist.
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs. ssh-keygen exits 1 if the
+#   output keyfile already exists
+###############################################################################
+function generate_ssh_keys() {
+  echo_c "##########################" "${WHITE}"
+  echo_c "Generating SSH key pair..." "${WHITE}"
+  echo_c "##########################" "${WHITE}"
+  if [ ! -d "${HOME}/.ssh" ]; then
+    mkdir -p "${HOME}/.ssh"
+  fi
+  if [ ! -f "${HOME}/.ssh/id_rsa" ]; then
+    curl -fsSL https://raw.github.com/NickolasHKraus/bash-scripts/master/generate_ssh_keys \
+      | /bin/bash -s -- -f id_rsa >/dev/null
+    echo_c "  • SSH key pair generated" "${WHITE}"
+    echo_c "  • Add your public key to GitHub, GitLab, etc." "${YELLOW}"
+    read -rn 1
+  else
+    echo_c "  • SSH key pair already exists" "${GREEN}"
+  fi
+  echo_c ""
+}
+
+###############################################################################
+# Set up workspace (github.com/NickolasHKraus) if it does not exist.
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function set_up_workspace() {
+  echo_c "#######################" "${WHITE}"
   echo_c "Setting up workspace..." "${WHITE}"
-  if [ ! -d $HOME/NickolasHKraus ]; then
-    echo_c "Creating 'NickolasHKraus' directory..." "${WHITE}"
-    mkdir -p $HOME/NickolasHKraus
+  echo_c "#######################" "${WHITE}"
+  if [ ! -d "${HOME}/NickolasHKraus" ]; then
+    mkdir -p "${HOME}/NickolasHKraus"
+    echo_c "  • Cloning repositories from github.com/NickolasHKraus..."
+    pushd "${HOME}/NickolasHKraus" >/dev/null || exit
+    if ! [ -x "$(command -v jq)" ]; then
+      brew install jq
+    fi
+    curl -fsSL https://raw.github.com/NickolasHKraus/bash-scripts/master/git-clone-gh \
+      | /bin/bash -s -- --user NickolasHKraus >/dev/null
   else
-    echo_c "${HOME}/NickolasHKraus already exists." $GREEN
+    echo_c "  • Workspace (NickolasHKraus) already exists" "${GREEN}"
   fi
-  echo_c "Cloning repositories..." "${WHITE}"
-  cd $HOME/NickolasHKraus
-  if ! [ -x "$(command -v jq)" ]; then
-    brew install jq
-  fi
-  (ssh-agent -s && ssh-add ~/.ssh/id_rsa) >/dev/null 2>&1
-  ssh git@github.com >/dev/null 2>&1
-  if [ $? -eq 255 ]; then
-    echo_c "Permission denied (publickey)." $RED
-    exit 1
-  fi
-
-  # The GitHub API only returns 30 results. Therefore, increment PAGE until no
-  # results are returned.
-  PAGE=1
-  SSH_URLS=()
-  while true; do
-    urls=($(curl -s "https://api.github.com/users/NickolasHKraus/repos?sort=full_name&page=$PAGE" | jq '.[].ssh_url' | tr -d \"))
-    if [ ${#urls[@]} -eq 0 ]; then
-      break
-    else
-      SSH_URLS+=(${urls[@]})
-    fi
-    let PAGE=PAGE+1
-  done
-
-  for ssh_url in "${SSH_URLS[@]}"; do
-    echo Cloning "${ssh_url}"..
-    output=$(git clone "${ssh_url}" 2>&1)
-    if [ $(echo $output | grep -i "already exists" -c) -ne 0 ]; then
-      echo_c "Repository already exists." $GREEN
-    fi
-  done
+  echo_c ""
 }
 
-function install_homebrew_packages {
+###############################################################################
+# Install Homebrew packages via Homebrew Bundle.
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_homebrew_packages() {
+  echo_c "###############################" "${WHITE}"
   echo_c "Installing Homebrew packages..." "${WHITE}"
-  brew bundle --file=$HOME/NickolasHKraus/dotfiles/Brewfile
-  echo_c "Upgrading Homebrew packages..." "${WHITE}"
-  brew upgrade
+  echo_c "###############################" "${WHITE}"
+  brew bundle --file="${HOME}/NickolasHKraus/dotfiles/Brewfile" >/dev/null 2>&1
+  echo_c "  • Upgrading Homebrew packages..."
+  brew upgrade >/dev/null 2>&1
+  echo_c ""
 }
 
-function configure_python {
-  echo_c "Configuring virtualenv and virtualenvwrapper..." $WHITE
-  export WORKON_HOME=$HOME/.virtualenvs
-  export VIRTUALENVWRAPPER_PYTHON=$HOME/.pyenv/shims/python
-  export VIRTUALENVWRAPPER_VIRTUALENV=$HOME/.pyenv/shims/virtualenv
-  # '--enable-framework' option is required by YouCompleteMe
-  export PYTHON_CONFIGURE_OPTS="--enable-framework"
-  echo_c "Installing Python ${PYTHON2_VERSION} via pyenv..." $WHITE
-  pyenv install $PYTHON2_VERSION
-  echo_c "Installing Python ${PYTHON3_VERSION} via pyenv..." $WHITE
-  pyenv install $PYTHON3_VERSION
-  echo_c "Creating virtual environments..." $WHITE
-  eval "$(pyenv init -)"
-  pyenv shell $PYTHON2_VERSION
-  echo_c "Installing virtualenv and virtualenvwrapper..." $WHITE
-  pip install virtualenv virtualenvwrapper
-  pyenv virtualenvwrapper
-  mkvirtualenv dev2
-  deactivate
-  pyenv shell $PYTHON3_VERSION
-  echo_c "Installing virtualenv and virtualenvwrapper..." $WHITE
-  pip install virtualenv virtualenvwrapper
-  pyenv virtualenvwrapper
-  mkvirtualenv dev3
-}
-
-function install_python_packages {
-  echo_c "Installing Python packages..." "${WHITE}"
-  workon dev3
-  pip install -r $HOME/NickolasHKraus/dotfiles/requirements.txt
-}
-
-function install_bash_scripts {
-  echo_c "Installing bash-scripts..." "${WHITE}"
-  cd $HOME/NickolasHKraus/bash-scripts
-  source install.sh
-}
-
-function install_dotfile {
-  echo_c "Installing dotfiles..." "${WHITE}"
-  cd $HOME/NickolasHKraus/dotfiles
-  source install.sh
-}
-
-function install_vim_scripts {
-  echo_c "Installing vim-scripts..." "${WHITE}"
-  cd $HOME/NickolasHKraus/vim-scripts
-  source install.sh
-}
-
-function install_vim_plugins {
-  echo_c "Installing Vim plugins..." "${WHITE}"
-  vim +PluginInstall +qall
-}
-
-function install_fzf {
-  echo_c "Installing fzf..." "${WHITE}"
-  if [ ! -f $HOME/.fzf.zsh ]; then
-    $(brew --prefix)/opt/fzf/install
+###############################################################################
+# Install Java via Homebrew.
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+#
+# The 'java' Homebrew formula is key-only. This means the formula is installed
+# only into the Cellar and is not linked into the default prefix.
+#
+# https://docs.brew.sh/FAQ#what-does-keg-only-mean
+###############################################################################
+function install_java() {
+  echo_c "####################" "${WHITE}"
+  echo_c "Installing Java..." "${WHITE}"
+  echo_c "####################" "${WHITE}"
+  if [ ! -x "$(command -v java)" ]; then
+    brew install java
+    # For the system Java wrappers to find the JDK, symlink it with:
+    sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
+    echo_c "  • Java installed" "${WHITE}"
+  else
+    echo_c "  • Java already installed" "${GREEN}"
   fi
+  echo_c ""
 }
 
+###############################################################################
+# Install Python via pyenv.
+#
+# pyenv: https://github.com/pyenv/pyenv
+#
+# Globals:
+#   PYTHON_VERSION (see `var`)
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_python() {
+  echo_c "####################" "${WHITE}"
+  echo_c "Installing Python..." "${WHITE}"
+  echo_c "####################" "${WHITE}"
+  export PYENV_ROOT="${HOME}/.pyenv"
+  export PATH="${PYENV_ROOT}/bin:${PATH}"
+  eval "$(pyenv init --path)"
+  eval "$(pyenv init -)"
+  pyenv shell "${PYTHON_VERSION}"
+  if [ $? -ne 0 ]; then
+    echo_c "  • Installing Python ${PYTHON_VERSION}..."
+    # '--enable-framework' option is required by YouCompleteMe
+    export PYTHON_CONFIGURE_OPTS="--enable-framework"
+    pyenv install "${PYTHON_VERSION}"
+    echo_c "  • Python ${PYTHON_VERSION} installed" "${WHITE}"
+  else
+    echo_c "  • Python ${PYTHON_VERSION} already installed" "${GREEN}"
+  fi
+  echo_c ""
+}
+
+###############################################################################
+# Set up 'default' virtual environment.
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function set_up_virtualenv() {
+  echo_c "#######################" "${WHITE}"
+  echo_c "Setting up virtualenv..." "${WHITE}"
+  echo_c "#######################" "${WHITE}"
+  pyenv virtualenvwrapper
+  workon default
+  if [ $? -ne 0 ]; then
+    pip install virtualenv virtualenvwrapper >/dev/null
+    echo_c "  • Setting up 'default' virtual environment..."
+    pyenv shell "${PYTHON_VERSION}"
+    mkvirtualenv default
+    deactivate
+    echo_c "  • 'default' virtual environment created" "${WHITE}"
+  else
+    echo_c "  • 'default' virtual environment already exists" "${GREEN}"
+  fi
+  echo_c ""
+}
+
+###############################################################################
+# Install Python packages via pip.
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_python_packages() {
+  echo_c "#############################" "${WHITE}"
+  echo_c "Installing Python packages..." "${WHITE}"
+  echo_c "#############################" "${WHITE}"
+  workon default
+  pip install -r "${HOME}/NickolasHKraus/dotfiles/requirements.txt" >/dev/null
+  deactivate
+  echo_c "  • Python packages installed" "${WHITE}"
+  echo_c ""
+}
+
+###############################################################################
+# Install Bash scripts.
+#
+# Bash scripts: https://github.com/NickolasHKraus/bash-scripts
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_bash_scripts() {
+  echo_c "##########################" "${WHITE}"
+  echo_c "Installing Bash scripts..." "${WHITE}"
+  echo_c "##########################" "${WHITE}"
+  pushd "${HOME}/NickolasHKraus/bash-scripts" >/dev/null || exit
+  ./install
+  popd >/dev/null || exit
+  echo_c "  • Bash scripts installed" "${WHITE}"
+  echo_c ""
+}
+
+###############################################################################
+# Install dotfiles.
+#
+# dotfiles: https://github.com/NickolasHKraus/dotfiles
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_dotfiles() {
+  echo_c "######################" "${WHITE}"
+  echo_c "Installing dotfiles..." "${WHITE}"
+  echo_c "######################" "${WHITE}"
+  pushd "${HOME}/NickolasHKraus/dotfiles" >/dev/null || exit
+  ./install
+  popd >/dev/null || exit
+  echo_c "  • dotfiles installed" "${WHITE}"
+  echo_c ""
+}
+
+###############################################################################
+# Install Vim scripts.
+#
+# Vim scripts: https://github.com/NickolasHKraus/vim-scripts
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_vim_scripts() {
+  echo_c "#########################" "${WHITE}"
+  echo_c "Installing Vim scripts..." "${WHITE}"
+  echo_c "#########################" "${WHITE}"
+  pushd "${HOME}/NickolasHKraus/vim-scripts" >/dev/null || exit
+  ./install
+  popd >/dev/null || exit
+  echo_c "  • Vim scripts installed" "${WHITE}"
+  echo_c ""
+}
+
+###############################################################################
+# Install Vim plugins via Vundle.
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_vim_plugins {
+  echo_c "##########################" "${WHITE}"
+  echo_c "Installing Vim plugins..." "${WHITE}"
+  echo_c "##########################" "${WHITE}"
+  vim +PluginClean +qall && vim +PluginInstall +qall && vim +PluginUpdate +qall
+  echo_c "  • Vim plugins installed" "${WHITE}"
+  echo_c ""
+}
+
+###############################################################################
+# Install fzf.
+#
+# fzf: https://github.com/junegunn/fzf
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_fzf() {
+  echo_c "#################" "${WHITE}"
+  echo_c "Installing fzf..." "${WHITE}"
+  echo_c "#################" "${WHITE}"
+  if [ ! -f "${HOME}/.fzf.zsh" ]; then
+    "$(brew --prefix)/opt/fzf/install"
+    echo_c "  • fzf installed" "${WHITE}"
+  else
+    echo_c "  • fzf already installed" "${GREEN}"
+  fi
+  echo_c ""
+}
+
+###############################################################################
+# Install YouCompleteMe.
+#
+# YouCompleteMe: https://github.com/ycm-core/YouCompleteMe
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
 function install_ycm {
+  echo_c "###########################" "${WHITE}"
   echo_c "Installing YouCompleteMe..." "${WHITE}"
-  cd $HOME/.vim/bundle/YouCompleteMe
-  ./install.py --clang-completer --go-completer
+  echo_c "###########################" "${WHITE}"
+  pushd "${HOME}/.vim/bundle/YouCompleteMe" >/dev/null || exit
+  python ./install.py --all
+  popd >/dev/null || exit
+  echo_c "  • YouCompleteMe installed" "${WHITE}"
+  echo_c ""
+}
+
+###############################################################################
+# Install yabai.
+#
+# yabai: https://github.com/koekeishiya/yabai
+#
+# See the Wiki for more information:
+#  * https://github.com/koekeishiya/yabai/wiki/Installing-yabai-(latest-release)
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_yabai {
+  echo_c "###################" "${WHITE}"
+  echo_c "Installing yabai..." "${WHITE}"
+  echo_c "###################" "${WHITE}"
+  sudo yabai --install-sa
+  sudo yabai --load-sa
+  brew services start yabai >/dev/null
+  if [ ! -e '/private/etc/sudoers.d/yabai' ]; then
+    echo_c "  • To automatically load the scripting addition on startup, add the following sudoers file:" "${YELLOW}"
+    echo_c "      sudo visudo -f /private/etc/sudoers.d/yabai" "${YELLOW}"
+    echo_c "      $(whoami) ALL = (root) NOPASSWD: /usr/local/bin/yabai --load-sa" "${YELLOW}"
+    read -rn 1
+  fi
+  echo_c "  • yabai installed" "${WHITE}"
+  echo_c ""
+}
+
+###############################################################################
+# Install skhd.
+#
+# skhd: https://github.com/koekeishiya/skhd
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to the standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_skhd {
+  echo_c "##################" "${WHITE}"
+  echo_c "Installing skhd..." "${WHITE}"
+  echo_c "##################" "${WHITE}"
+  brew services start skhd >/dev/null
+  echo_c "  • skhd installed" "${WHITE}"
+  echo_c ""
 }
