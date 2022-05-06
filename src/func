@@ -579,12 +579,16 @@ function set_up_virtualenv() {
   echo_c "#######################" "${WHITE}"
   echo_c "Setting up virtualenv..." "${WHITE}"
   echo_c "#######################" "${WHITE}"
-  workon default
+  workon default >/dev/null 2>&1
   if [ $? -ne 0 ]; then
-    pip install virtualenv virtualenvwrapper >/dev/null
     echo_c "  • Setting up 'default' virtual environment..."
     pyenv shell "${PYTHON_VERSION}"
-    mkvirtualenv default
+    pip install virtualenv virtualenvwrapper >/dev/null
+    export WORKON_HOME="${HOME}/.virtualenvs"
+    export VIRTUALENVWRAPPER_PYTHON="${HOME}/.pyenv/shims/python"
+    export VIRTUALENVWRAPPER_VIRTUALENV="${HOME}/.pyenv/shims/virtualenv"
+    pyenv virtualenvwrapper
+    mkvirtualenv default >/dev/null
     deactivate
     echo_c "  • 'default' virtual environment created" "${WHITE}"
   else
