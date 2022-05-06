@@ -259,6 +259,7 @@ function install_homebrew() {
   echo_c "######################" "${WHITE}"
   if [ ! -x "$(command -v brew)" ]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
     echo_c "  • Homebrew installed" "${WHITE}"
   else
     echo_c "  • Homebrew already installed" "${GREEN}"
@@ -344,7 +345,7 @@ function install_oh_my_zsh() {
   echo_c "Installing Oh My Zsh..." "${WHITE}"
   echo_c "#######################" "${WHITE}"
   if [ ! -d "${HOME}/.oh-my-zsh" ]; then
-    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     echo_c "  • Oh My Zsh installed" "${WHITE}"
   else
     echo_c "  • Oh My Zsh already installed" "${GREEN}"
@@ -397,7 +398,7 @@ function install_powerline_fonts() {
   echo_c "#############################" "${WHITE}"
   echo_c "Installing Powerline fonts..." "${WHITE}"
   echo_c "#############################" "${WHITE}"
-  if [ ! -d "${HOME}/Library/Fonts" ]; then
+  if [ ! -e "${HOME}/Library/Fonts/Meslo LG S Regular for Powerline.ttf" ]; then
     git clone https://github.com/powerline/fonts.git --depth=1
     pushd fonts >/dev/null || exit
     ./install.sh
@@ -434,6 +435,7 @@ function generate_ssh_keys() {
     curl -fsSL https://raw.github.com/NickolasHKraus/bash-scripts/master/generate_ssh_keys \
       | /bin/bash -s -- -f id_rsa >/dev/null
     echo_c "  • SSH key pair generated" "${WHITE}"
+    # TODO: Press Enter to continue.
     echo_c "  • Add your public key to GitHub, GitLab, etc." "${YELLOW}"
     read -rn 1
   else
@@ -458,12 +460,12 @@ function set_up_workspace() {
   echo_c "#######################" "${WHITE}"
   echo_c "Setting up workspace..." "${WHITE}"
   echo_c "#######################" "${WHITE}"
-  if [ ! -d "${HOME}/NickolasHKraus" ]; then
+  if [ ! -d "${HOME}/NickolasHKraus/nhk-mac" ]; then
     mkdir -p "${HOME}/NickolasHKraus"
     echo_c "  • Cloning repositories from github.com/NickolasHKraus..."
     pushd "${HOME}/NickolasHKraus" >/dev/null || exit
     if ! [ -x "$(command -v jq)" ]; then
-      brew install jq
+      brew install jq >/dev/null
     fi
     curl -fsSL https://raw.github.com/NickolasHKraus/bash-scripts/master/git-clone-gh \
       | /bin/bash -s -- --user NickolasHKraus >/dev/null
@@ -545,9 +547,8 @@ function install_python() {
   echo_c "####################" "${WHITE}"
   echo_c "Installing Python..." "${WHITE}"
   echo_c "####################" "${WHITE}"
-  export PYENV_ROOT="${HOME}/.pyenv"
-  export PATH="${PYENV_ROOT}/bin:${PATH}"
-  eval "$(pyenv init --path)"
+  export PYENV_ROOT="$HOME/.pyenv"
+  command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init -)"
   pyenv shell "${PYTHON_VERSION}"
   if [ $? -ne 0 ]; then
@@ -578,7 +579,6 @@ function set_up_virtualenv() {
   echo_c "#######################" "${WHITE}"
   echo_c "Setting up virtualenv..." "${WHITE}"
   echo_c "#######################" "${WHITE}"
-  pyenv virtualenvwrapper
   workon default
   if [ $? -ne 0 ]; then
     pip install virtualenv virtualenvwrapper >/dev/null
