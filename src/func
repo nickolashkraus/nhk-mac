@@ -519,7 +519,7 @@ function install_java() {
   echo_c "Installing Java..." "${WHITE}"
   echo_c "####################" "${WHITE}"
   if [ ! -x "$(command -v java)" ]; then
-    brew install java
+    brew install java java11
     # For the system Java wrappers to find the JDK, symlink it with:
     sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
     echo_c "  • Java installed" "${WHITE}"
