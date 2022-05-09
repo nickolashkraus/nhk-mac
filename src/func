@@ -257,9 +257,9 @@ function install_homebrew() {
   echo_c "######################" "${WHITE}"
   echo_c "Installing Homebrew..." "${WHITE}"
   echo_c "######################" "${WHITE}"
+  eval "$(/opt/homebrew/bin/brew shellenv)"
   if [ ! -x "$(command -v brew)" ]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    eval "$(/opt/homebrew/bin/brew shellenv)"
     echo_c "  • Homebrew installed" "${WHITE}"
   else
     echo_c "  • Homebrew already installed" "${GREEN}"
