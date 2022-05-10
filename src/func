@@ -800,7 +800,7 @@ function install_yabai {
   if [ ! -e '/private/etc/sudoers.d/yabai' ]; then
     echo_c "  • To automatically load the scripting addition on startup, add the following sudoers file:" "${YELLOW}"
     echo_c "      sudo visudo -f /private/etc/sudoers.d/yabai" "${YELLOW}"
-    echo_c "      $(whoami) ALL = (root) NOPASSWD: /usr/local/bin/yabai --load-sa" "${YELLOW}"
+    echo_c "      $(whoami) ALL = (root) NOPASSWD: $(brew --prefix)/bin/yabai --load-sa" "${YELLOW}"
     read -rn 1
   fi
   echo_c "  • yabai installed" "${WHITE}"
