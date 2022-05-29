@@ -106,7 +106,7 @@ function check_sip() {
     echo_c "  • Run \`csrutil disable\` in macOS Recovery to disable SIP." "${YELLOW}"
     echo_c ""
     echo_c "  • On Apple silicon, add the -arm64e_preview_abi boot arg to your system:" "${YELLOW}"
-    echo_c "      nvram boot-args=-arm64e_preview_abi" "${YELLOW}"
+    echo_c "      sudo nvram boot-args=-arm64e_preview_abi" "${YELLOW}"
     exit 1
   else
     echo_c "  • System Integrity Protection is disabled." "${GREEN}"
@@ -257,15 +257,18 @@ function install_homebrew() {
   echo_c "######################" "${WHITE}"
   echo_c "Installing Homebrew..." "${WHITE}"
   echo_c "######################" "${WHITE}"
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+  # Suppress stderr, since this command will error if Homebrew is neither
+  # installed nor configured.
+  eval "$(/opt/homebrew/bin/brew shellenv)" >/dev/null 2>&1
   if [ ! -x "$(command -v brew)" ]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     echo_c "  • Homebrew installed" "${WHITE}"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
   else
     echo_c "  • Homebrew already installed" "${GREEN}"
   fi
   echo_c "  • Updating Homebrew..."
-  brew update >/dev/null 2>&1
+  brew update
   echo_c ""
 }
 
@@ -287,8 +290,8 @@ function install_homebrew_bundle() {
   echo_c "#############################" "${WHITE}"
   echo_c "Installing Homebrew Bundle..." "${WHITE}"
   echo_c "#############################" "${WHITE}"
-  # brew bundle is automatically installed when first run.
-  if brew bundle >/dev/null 2>&1; then
+  # Homebrew Bundle is automatically installed when first run.
+  if brew bundle; then
     echo_c "  • Homebrew Bundle installed" "${WHITE}"
   else
     echo_c "  • Homebrew Bundle already installed" "${GREEN}"
@@ -433,7 +436,7 @@ function generate_ssh_keys() {
   fi
   if [ ! -f "${HOME}/.ssh/id_rsa" ]; then
     curl -fsSL https://raw.github.com/NickolasHKraus/bash-scripts/master/generate_ssh_keys \
-      | /bin/bash -s -- -f id_rsa >/dev/null
+      | /bin/bash -s -- -f id_rsa
     echo_c "  • SSH key pair generated" "${WHITE}"
     # TODO: Press Enter to continue.
     echo_c "  • Add your public key to GitHub, GitLab, etc." "${YELLOW}"
@@ -465,10 +468,10 @@ function set_up_workspace() {
     echo_c "  • Cloning repositories from github.com/NickolasHKraus..."
     pushd "${HOME}/NickolasHKraus" >/dev/null || exit
     if ! [ -x "$(command -v jq)" ]; then
-      brew install jq >/dev/null
+      brew install jq
     fi
     curl -fsSL https://raw.github.com/NickolasHKraus/bash-scripts/master/git-clone-gh \
-      | /bin/bash -s -- --user NickolasHKraus >/dev/null
+      | /bin/bash -s -- --user NickolasHKraus
   else
     echo_c "  • Workspace (NickolasHKraus) already exists" "${GREEN}"
   fi
@@ -491,9 +494,9 @@ function install_homebrew_packages() {
   echo_c "###############################" "${WHITE}"
   echo_c "Installing Homebrew packages..." "${WHITE}"
   echo_c "###############################" "${WHITE}"
-  brew bundle --file="${HOME}/NickolasHKraus/dotfiles/Brewfile" >/dev/null 2>&1
+  brew bundle --file="${HOME}/NickolasHKraus/dotfiles/Brewfile"
   echo_c "  • Upgrading Homebrew packages..."
-  brew upgrade >/dev/null 2>&1
+  brew upgrade
   echo_c ""
 }
 
@@ -518,7 +521,7 @@ function install_java() {
   echo_c "####################" "${WHITE}"
   echo_c "Installing Java..." "${WHITE}"
   echo_c "####################" "${WHITE}"
-  if [ ! -x "$(command -v java)" ]; then
+  if [[ "$(command -v java)" == '/usr/bin/java' ]]; then
     brew install java java11
     # For the system Java wrappers to find this JDK, symlink it with
     sudo ln -sfn "$(brew --prefix)/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk"
@@ -584,16 +587,16 @@ function set_up_virtualenv() {
   echo_c "#######################" "${WHITE}"
   echo_c "Setting up virtualenv..." "${WHITE}"
   echo_c "#######################" "${WHITE}"
-  workon default >/dev/null 2>&1
+  workon default
   if [ $? -ne 0 ]; then
     echo_c "  • Setting up 'default' virtual environment..."
     pyenv shell "${PYTHON_VERSION}"
-    pip install virtualenv virtualenvwrapper >/dev/null
+    pip install virtualenv virtualenvwrapper
     export WORKON_HOME="${HOME}/.virtualenvs"
     export VIRTUALENVWRAPPER_PYTHON="${HOME}/.pyenv/shims/python"
     export VIRTUALENVWRAPPER_VIRTUALENV="${HOME}/.pyenv/shims/virtualenv"
     pyenv virtualenvwrapper
-    mkvirtualenv default >/dev/null
+    mkvirtualenv default
     deactivate
     echo_c "  • 'default' virtual environment created" "${WHITE}"
   else
@@ -619,7 +622,7 @@ function install_python_packages() {
   echo_c "Installing Python packages..." "${WHITE}"
   echo_c "#############################" "${WHITE}"
   workon default
-  pip install -r "${HOME}/NickolasHKraus/dotfiles/requirements.txt" >/dev/null
+  pip install -r "${HOME}/NickolasHKraus/dotfiles/requirements.txt"
   deactivate
   echo_c "  • Python packages installed" "${WHITE}"
   echo_c ""
@@ -796,7 +799,7 @@ function install_yabai {
   echo_c "###################" "${WHITE}"
   sudo yabai --install-sa
   sudo yabai --load-sa
-  brew services start yabai >/dev/null
+  brew services start yabai
   if [ ! -e '/private/etc/sudoers.d/yabai' ]; then
     echo_c "  • To automatically load the scripting addition on startup, add the following sudoers file:" "${YELLOW}"
     echo_c "      sudo visudo -f /private/etc/sudoers.d/yabai" "${YELLOW}"
@@ -825,7 +828,7 @@ function install_skhd {
   echo_c "##################" "${WHITE}"
   echo_c "Installing skhd..." "${WHITE}"
   echo_c "##################" "${WHITE}"
-  brew services start skhd >/dev/null
+  brew services start skhd
   echo_c "  • skhd installed" "${WHITE}"
   echo_c ""
 }
