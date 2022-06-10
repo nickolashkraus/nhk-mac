@@ -564,6 +564,7 @@ function install_python() {
     # '--enable-framework' option is required by YouCompleteMe
     export PYTHON_CONFIGURE_OPTS="--enable-framework"
     pyenv install "${PYTHON_VERSION}"
+    python -m pip install --upgrade pip
     echo_c "  • Python ${PYTHON_VERSION} installed" "${WHITE}"
   else
     echo_c "  • Python ${PYTHON_VERSION} already installed" "${GREEN}"
@@ -597,6 +598,7 @@ function set_up_virtualenv() {
     export VIRTUALENVWRAPPER_VIRTUALENV="${HOME}/.pyenv/shims/virtualenv"
     pyenv virtualenvwrapper
     mkvirtualenv default
+    python -m pip install --upgrade pip
     deactivate
     echo_c "  • 'default' virtual environment created" "${WHITE}"
   else
