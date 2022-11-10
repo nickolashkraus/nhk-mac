@@ -435,7 +435,7 @@ function generate_ssh_keys() {
     mkdir -p "${HOME}/.ssh"
   fi
   if [ ! -f "${HOME}/.ssh/id_rsa" ]; then
-    curl -fsSL https://raw.github.com/NickolasHKraus/bash-scripts/master/generate_ssh_keys \
+    curl -fsSL https://raw.github.com/NickolasHKraus/bash-scripts/master/generate-ssh-keys \
       | /bin/bash -s -- -f id_rsa
     echo_c "  • SSH key pair generated" "${WHITE}"
     # TODO: Press Enter to continue.
