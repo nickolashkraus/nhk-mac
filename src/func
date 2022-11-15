@@ -435,7 +435,7 @@ function generate_ssh_keys() {
     mkdir -p "${HOME}/.ssh"
   fi
   if [ ! -f "${HOME}/.ssh/id_rsa" ]; then
-    curl -fsSL https://raw.github.com/NickolasHKraus/bash-scripts/master/generate-ssh-keys \
+    curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/generate-ssh-keys \
       | /bin/bash -s -- -f id_rsa
     echo_c "  • SSH key pair generated" "${WHITE}"
     # TODO: Press Enter to continue.
@@ -448,7 +448,7 @@ function generate_ssh_keys() {
 }
 
 ###############################################################################
-# Set up workspace (github.com/NickolasHKraus) if it does not exist.
+# Set up workspace (github.com/nickolashkraus) if it does not exist.
 #
 # Globals:
 #   None
@@ -463,17 +463,17 @@ function set_up_workspace() {
   echo_c "#######################" "${WHITE}"
   echo_c "Setting up workspace..." "${WHITE}"
   echo_c "#######################" "${WHITE}"
-  if [ ! -d "${HOME}/NickolasHKraus/nhk-mac" ]; then
-    mkdir -p "${HOME}/NickolasHKraus"
-    echo_c "  • Cloning repositories from github.com/NickolasHKraus..."
-    pushd "${HOME}/NickolasHKraus" >/dev/null || exit
+  if [ ! -d "${HOME}/nickolashkraus/nhk-mac" ]; then
+    mkdir -p "${HOME}/nickolashkraus"
+    echo_c "  • Cloning repositories from github.com/nickolashkraus..."
+    pushd "${HOME}/nickolashkraus" >/dev/null || exit
     if ! [ -x "$(command -v jq)" ]; then
       brew install jq
     fi
-    curl -fsSL https://raw.github.com/NickolasHKraus/bash-scripts/master/git-clone-gh \
-      | /bin/bash -s -- --user NickolasHKraus
+    curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/git-clone-gh \
+      | /bin/bash -s -- --user nickolashkraus
   else
-    echo_c "  • Workspace (NickolasHKraus) already exists" "${GREEN}"
+    echo_c "  • Workspace (nickolashkraus) already exists" "${GREEN}"
   fi
   echo_c ""
 }
@@ -494,7 +494,7 @@ function install_homebrew_packages() {
   echo_c "###############################" "${WHITE}"
   echo_c "Installing Homebrew packages..." "${WHITE}"
   echo_c "###############################" "${WHITE}"
-  brew bundle --file="${HOME}/NickolasHKraus/dotfiles/Brewfile"
+  brew bundle --file="${HOME}/nickolashkraus/dotfiles/Brewfile"
   echo_c "  • Upgrading Homebrew packages..."
   brew upgrade
   echo_c ""
@@ -624,7 +624,7 @@ function install_python_packages() {
   echo_c "Installing Python packages..." "${WHITE}"
   echo_c "#############################" "${WHITE}"
   workon default
-  pip install -r "${HOME}/NickolasHKraus/dotfiles/requirements.txt"
+  pip install -r "${HOME}/nickolashkraus/dotfiles/requirements.txt"
   deactivate
   echo_c "  • Python packages installed" "${WHITE}"
   echo_c ""
@@ -633,7 +633,7 @@ function install_python_packages() {
 ###############################################################################
 # Install Bash scripts.
 #
-# Bash scripts: https://github.com/NickolasHKraus/bash-scripts
+# Bash scripts: https://github.com/nickolashkraus/bash-scripts
 #
 # Globals:
 #   None
@@ -648,7 +648,7 @@ function install_bash_scripts() {
   echo_c "##########################" "${WHITE}"
   echo_c "Installing Bash scripts..." "${WHITE}"
   echo_c "##########################" "${WHITE}"
-  pushd "${HOME}/NickolasHKraus/bash-scripts" >/dev/null || exit
+  pushd "${HOME}/nickolashkraus/bash-scripts" >/dev/null || exit
   ./install
   popd >/dev/null || exit
   echo_c "  • Bash scripts installed" "${WHITE}"
@@ -658,7 +658,7 @@ function install_bash_scripts() {
 ###############################################################################
 # Install dotfiles.
 #
-# dotfiles: https://github.com/NickolasHKraus/dotfiles
+# dotfiles: https://github.com/nickolashkraus/dotfiles
 #
 # Globals:
 #   None
@@ -673,7 +673,7 @@ function install_dotfiles() {
   echo_c "######################" "${WHITE}"
   echo_c "Installing dotfiles..." "${WHITE}"
   echo_c "######################" "${WHITE}"
-  pushd "${HOME}/NickolasHKraus/dotfiles" >/dev/null || exit
+  pushd "${HOME}/nickolashkraus/dotfiles" >/dev/null || exit
   ./install
   popd >/dev/null || exit
   echo_c "  • dotfiles installed" "${WHITE}"
@@ -683,7 +683,7 @@ function install_dotfiles() {
 ###############################################################################
 # Install Vim scripts.
 #
-# Vim scripts: https://github.com/NickolasHKraus/vim-scripts
+# Vim scripts: https://github.com/nickolashkraus/vim-scripts
 #
 # Globals:
 #   None
@@ -698,7 +698,7 @@ function install_vim_scripts() {
   echo_c "#########################" "${WHITE}"
   echo_c "Installing Vim scripts..." "${WHITE}"
   echo_c "#########################" "${WHITE}"
-  pushd "${HOME}/NickolasHKraus/vim-scripts" >/dev/null || exit
+  pushd "${HOME}/nickolashkraus/vim-scripts" >/dev/null || exit
   ./install
   popd >/dev/null || exit
   echo_c "  • Vim scripts installed" "${WHITE}"

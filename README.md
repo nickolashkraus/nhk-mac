@@ -15,7 +15,7 @@ A CLI for quickly setting up a new macOS workstation.
 2. Download the zip file.
 
 ```bash
-curl -L https://github.com/NickolasHKraus/nhk-mac/archive/master.zip -o nhk-mac.zip
+curl -L https://github.com/nickolashkraus/nhk-mac/archive/master.zip -o nhk-mac.zip
 unzip -q nhk-mac.zip
 mv nhk-mac-master nhk-mac
 rm nhk-mac.zip
