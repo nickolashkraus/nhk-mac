@@ -230,7 +230,7 @@ function install_xcode() {
   echo_c "###################################" "${WHITE}"
   if [ ! -x "$(command -v git)" ]; then
     xcode-select --install
-    echo_c "Press ENTER to continue." "${WHITE}"
+    echo_c "Press ENTER to continue" "${WHITE}"
     read -rn 1
     echo_c "  • Xcode Developer Tools installed" "${WHITE}"
   else
@@ -719,7 +719,7 @@ function install_vim_scripts() {
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
-function install_vim_plugins {
+function install_vim_plugins() {
   echo_c "##########################" "${WHITE}"
   echo_c "Installing Vim plugins..." "${WHITE}"
   echo_c "##########################" "${WHITE}"
@@ -769,7 +769,7 @@ function install_fzf() {
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
-function install_ycm {
+function install_ycm() {
   echo_c "###########################" "${WHITE}"
   echo_c "Installing YouCompleteMe..." "${WHITE}"
   echo_c "###########################" "${WHITE}"
@@ -797,7 +797,7 @@ function install_ycm {
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
-function install_yabai {
+function install_yabai() {
   echo_c "###################" "${WHITE}"
   echo_c "Installing yabai..." "${WHITE}"
   echo_c "###################" "${WHITE}"
@@ -828,7 +828,7 @@ function install_yabai {
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
-function install_skhd {
+function install_skhd() {
   echo_c "##################" "${WHITE}"
   echo_c "Installing skhd..." "${WHITE}"
   echo_c "##################" "${WHITE}"
