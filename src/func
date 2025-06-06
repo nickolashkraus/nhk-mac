@@ -530,7 +530,8 @@ function install_java() {
     sudo ln -sfn "$(brew --prefix)/opt/openjdk@19/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-19.jdk"
     # openjdk@19 is keg-only, which means it was not symlinked into
     # `brew --prefix`, because this is an alternate version of another formula.
-    export PATH="$(brew --prefix)/opt/openjdk@19/bin:$PATH"
+    PATH="$(brew --prefix)/opt/openjdk@19/bin:$PATH"
+    export PATH
     # For compilers to find openjdk@19 you may need to set:
     export CPPFLAGS="-I/opt/homebrew/opt/openjdk@19/include"
     echo_c "  • Java installed" "${WHITE}"
