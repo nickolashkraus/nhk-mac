@@ -22,20 +22,8 @@ rm nhk-mac.zip
 cd nhk-mac
 ```
 
-3. Run `nhk-mac`.
+3. Run `nhk-mac` (use `--help` for options).
 
 ```bash
-./nhk-mac
-```
-
-## TODO
-- [ ] Print public SSH key to console.
-- [ ] Check that public SSH key added to GitHub before continuing.
-- [ ] Fix the following:
-
-```bash
-rm: /Users/x/.aws/config: No such file or directory
-rm: /Users/x/.ssh/config: No such file or directory
-rm: /Users/x/.vim/.en.utf-8.add: No such file or directory
-...
+./nhk-mac [--help]
 ```
