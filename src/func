@@ -521,13 +521,13 @@ function install_homebrew_packages() {
 # https://docs.brew.sh/FAQ#what-does-keg-only-mean
 ###############################################################################
 function install_java() {
-  echo_c "####################" "${WHITE}"
+  echo_c "##################" "${WHITE}"
   echo_c "Installing Java..." "${WHITE}"
-  echo_c "####################" "${WHITE}"
+  echo_c "##################" "${WHITE}"
   if [[ "$(command -v java)" == '/usr/bin/java' ]]; then
     brew install java
     # For the system Java wrappers to find this JDK, symlink it with:
-    sudo ln -sfn "$(brew --prefix)/opt/openjdk@19/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-19.jdk"
+    sudo ln -sfn "$(brew --prefix)/opt/openjdk@19/libexec/openjdk.jdk" /Library/Java/JavaVirtualMachines/openjdk-19.jdk
     # openjdk@19 is keg-only, which means it was not symlinked into
     # `brew --prefix`, because this is an alternate version of another formula.
     PATH="$(brew --prefix)/opt/openjdk@19/bin:$PATH"
@@ -588,9 +588,9 @@ function install_python() {
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
 function set_up_virtualenv() {
-  echo_c "#######################" "${WHITE}"
+  echo_c "########################" "${WHITE}"
   echo_c "Setting up virtualenv..." "${WHITE}"
-  echo_c "#######################" "${WHITE}"
+  echo_c "########################" "${WHITE}"
   if ! workon default; then
     echo_c "  • Setting up 'default' virtual environment..." "${WHITE}"
     pyenv shell "${PYTHON_VERSION}"
@@ -720,9 +720,9 @@ function install_vim_scripts() {
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
 function install_vim_plugins() {
-  echo_c "##########################" "${WHITE}"
+  echo_c "#########################" "${WHITE}"
   echo_c "Installing Vim plugins..." "${WHITE}"
-  echo_c "##########################" "${WHITE}"
+  echo_c "#########################" "${WHITE}"
   vim +PluginClean +qall && vim +PluginInstall +qall && vim +PluginUpdate +qall
   echo_c "  • Vim plugins installed" "${WHITE}"
   echo_c ""
