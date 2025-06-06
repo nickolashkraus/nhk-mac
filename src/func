@@ -439,8 +439,10 @@ function generate_ssh_keys() {
     curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/generate-ssh-keys \
       | /bin/bash -s -- -f id_rsa
     echo_c "  • SSH key pair generated" "${WHITE}"
-    # TODO: Press Enter to continue.
+    echo_c "  • Public key:" "${WHITE}"
+    cat "${HOME}/.ssh/id_rsa.pub"
     echo_c "  • Add your public key to GitHub, GitLab, etc." "${YELLOW}"
+    echo_c "    Press Enter to continue" "${WHITE}"
     read -rn 1
   else
     echo_c "  • SSH key pair already exists" "${GREEN}"
