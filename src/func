@@ -56,17 +56,17 @@ function usage() {
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
 function welcome() {
-  echo_c "                                                                    " "${WHITE}"
-  echo_c "                      _     _                                       " "${RED}"
-  echo_c "                _ __ | |__ | | __     _ __ ___   __ _  ___          " "${YELLOW}"
-  echo_c "               | '_ \| '_ \| |/ /____| '_ \` _ \ / _\` |/ __|       " "${GREEN}"
-  echo_c "               | | | | | | |   <_____| | | | | | (_| | (__          " "${CYAN}"
-  echo_c "               |_| |_|_| |_|_|\_\    |_| |_| |_|\__,_|\___|         " "${BLUE}"
-  echo_c "                                                                    " "${WHITE}"
-  echo_c "                           Welcome to nhk-mac.                      " "${WHITE}"
-  echo_c "                                                                    " "${WHITE}"
-  echo_c "    nhk-mac is a CLI for quickly setting up a new macOS workstation." ""
-  echo_c "                                                                    " "${WHITE}"
+  echo_c "                                                                        " "${WHITE}"
+  echo_c "                      _     _                                           " "${RED}"
+  echo_c "                _ __ | |__ | | __     _ __ ___   __ _  ___              " "${YELLOW}"
+  echo_c "               | '_ \| '_ \| |/ /____| '_ \` _ \ / _\` |/ __|           " "${GREEN}"
+  echo_c "               | | | | | | |   <_____| | | | | | (_| | (__              " "${CYAN}"
+  echo_c "               |_| |_|_| |_|_|\_\    |_| |_| |_|\__,_|\___|             " "${BLUE}"
+  echo_c "                                                                        " "${WHITE}"
+  echo_c "                           Welcome to nhk-mac.                          " "${WHITE}"
+  echo_c "                                                                        " "${WHITE}"
+  echo_c "    nhk-mac is a CLI for quickly setting up a new macOS workstation.    " ""
+  echo_c "                                                                        " "${WHITE}"
 }
 
 ###############################################################################
