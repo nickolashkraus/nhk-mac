@@ -402,11 +402,12 @@ function install_powerline_fonts() {
   echo_c "Installing Powerline fonts..." "${WHITE}"
   echo_c "#############################" "${WHITE}"
   if [ ! -e "${HOME}/Library/Fonts/Meslo LG S Regular for Powerline.ttf" ]; then
-    git clone https://github.com/powerline/fonts.git --depth=1
-    pushd fonts >/dev/null || exit
+    fonts_dir="$(mktemp -d)"
+    git clone https://github.com/powerline/fonts.git --depth=1 "${fonts_dir}"
+    pushd "${fonts_dir}" >/dev/null || exit
     ./install.sh
     popd >/dev/null || exit
-    rm -rf fonts
+    rm -rf "${fonts_dir}"
     echo_c "  • Powerline fonts installed" "${WHITE}"
   else
     echo_c "  • Powerline fonts already installed" "${GREEN}"
