@@ -1,13 +1,19 @@
 #!/bin/bash
 #
-# FUNCTIONS
+# Defines functions for nhk-mac. Each function handles a specific task for
+# setting up a new macOS workstation.
 #
-# This file is sourced by `run`.
+# USAGE:
 #
-# For global color variables (WHITE, RED, RESET, etc.), see `color`.
+#   source src/func
+#
+#   welcome
+#
+# For global color variables (WHITE, RED, RESET, etc.), see `src/color`.
 
 ###############################################################################
-# Write string to the standard output with color.
+# Write a string to standard output with color. If a color ($2) is not
+# provided, this function operates like a standard call to `echo`.
 #
 # Globals:
 #   None
@@ -20,8 +26,8 @@
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
 function echo_c() {
-  echo -en "${2}"
-  echo "${1}"
+  echo -en "${2:-}"
+  echo "${1:-}"
   echo -en "${RESET}"
 }
 
@@ -39,7 +45,17 @@ function echo_c() {
 ###############################################################################
 function usage() {
   echo_c
-  echo_c "Usage: nhk-mac" "${WHITE}"
+  echo_c "Usage: nhk-mac [OPTIONS]" "${WHITE}"
+  echo_c
+  echo_c "Options:" "${WHITE}"
+  echo_c "  -h, --help                     Show this help message" "${WHITE}"
+  echo_c "  --hostname HOSTNAME            Set system hostname" "${WHITE}"
+  echo_c "  --python-version VERSION       Set Python version to install" "${WHITE}"
+  echo_c "  --github-access-token TOKEN    Set GitHub access token" "${WHITE}"
+  echo_c
+  echo_c "If a hostname, Python version, or GitHub access token are not" "${WHITE}"
+  echo_c "provided via the command line, you will be prompted to enter them" "${WHITE}"
+  echo_c "interactively." "${WHITE}"
   echo_c
 }
 
@@ -474,7 +490,7 @@ function set_up_workspace() {
       brew install jq
     fi
     curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/git-clone-gh \
-      | /bin/bash -s -- --user nickolashkraus
+      | /bin/bash -s -- --user nickolashkraus "${GITHUB_ACCESS_TOKEN}"
   else
     echo_c "  • Workspace (nickolashkraus) already exists" "${GREEN}"
   fi
