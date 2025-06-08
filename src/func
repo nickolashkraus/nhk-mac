@@ -19,9 +19,10 @@
 #   None
 # Arguments:
 #   $1: string
-#   $2: color (see `color`). If not provided, string is output without color
+#   $2: color (see `src/color`). If not provided, string is output without
+#   color
 # Outputs:
-#   String to the standard output with color
+#   String to standard output with color
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -39,7 +40,7 @@ function echo_c() {
 # Arguments:
 #   None
 # Outputs:
-#   Usage to the standard output
+#   Usage to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -60,14 +61,14 @@ function usage() {
 }
 
 ###############################################################################
-# Print welcome.
+# Print welcome prompt.
 #
 # Globals:
 #   None
 # Arguments:
 #   None
 # Outputs:
-#   Usage to the standard output
+#   Welcome prompt to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -81,7 +82,7 @@ function welcome() {
   echo_c "                                                                        " "${WHITE}"
   echo_c "                           Welcome to nhk-mac.                          " "${WHITE}"
   echo_c "                                                                        " "${WHITE}"
-  echo_c "    nhk-mac is a CLI for quickly setting up a new macOS workstation.    " ""
+  echo_c "    nhk-mac is a CLI for quickly setting up a new macOS workstation.    " "${WHITE}"
   echo_c "                                                                        " "${WHITE}"
 }
 
@@ -108,7 +109,7 @@ function welcome() {
 # Arguments:
 #   None
 # Outputs:
-#   Usage to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -120,25 +121,25 @@ function check_sip() {
   if [[ "${output}" =~ enabled ]]; then
     echo_c "  • System Integrity Protection is enabled." "${YELLOW}"
     echo_c "  • Run \`csrutil disable\` in macOS Recovery to disable SIP." "${YELLOW}"
-    echo_c ""
+    echo_c
     echo_c "  • On Apple silicon, add the -arm64e_preview_abi boot arg to your system:" "${YELLOW}"
     echo_c "      sudo nvram boot-args=-arm64e_preview_abi" "${YELLOW}"
     exit 1
   else
     echo_c "  • System Integrity Protection is disabled." "${GREEN}"
   fi
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
 # Set system hostname via `scutil`.
 #
 # Globals:
-#   HOSTNAME (see `var`)
+#   HOSTNAME (set via command-line or user prompt)
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if HOSTNAME is not set or an error occurs
 ###############################################################################
@@ -148,11 +149,11 @@ function set_hostname() {
   echo_c "###################" "${WHITE}"
   echo_c "  • Setting hostname to ${HOSTNAME}"
   if [ -z "${HOSTNAME}" ]; then
-    echo_c "ERROR: HOSTNAME must be set in \`var\`." "${RED}"
+    echo_c "ERROR: HOSTNAME must be set." "${RED}"
     exit 1
   fi
   sudo scutil --set HostName "${HOSTNAME}"
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -163,7 +164,7 @@ function set_hostname() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 #
@@ -182,7 +183,7 @@ function configure_keyboard() {
   defaults write -g InitialKeyRepeat -int 15
   echo_c "  • Setting key repeat to 2 (30 ms). Default 2 (30 ms)"
   defaults write -g KeyRepeat -int 2
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -193,7 +194,7 @@ function configure_keyboard() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 #
@@ -222,7 +223,7 @@ function configure_dock() {
   echo_c "  • Setting app size to 32"
   defaults write com.apple.dock tilesize -int 32
   killall Dock
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -236,7 +237,7 @@ function configure_dock() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -252,7 +253,7 @@ function install_xcode() {
   else
     echo_c "  • Xcode Developer Tools already installed" "${GREEN}"
   fi
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -265,7 +266,7 @@ function install_xcode() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -279,13 +280,13 @@ function install_homebrew() {
   if [ ! -x "$(command -v brew)" ]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     echo_c "  • Homebrew installed" "${WHITE}"
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+    eval "$(brew shellenv)"
   else
     echo_c "  • Homebrew already installed" "${GREEN}"
   fi
   echo_c "  • Updating Homebrew..."
   brew update
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -298,7 +299,7 @@ function install_homebrew() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -312,7 +313,7 @@ function install_homebrew_bundle() {
   else
     echo_c "  • Homebrew Bundle already installed" "${GREEN}"
   fi
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -325,7 +326,7 @@ function install_homebrew_bundle() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -342,7 +343,7 @@ function install_iterm2() {
   else
     echo_c "  • iTerm2 already installed" "${GREEN}"
   fi
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -355,7 +356,7 @@ function install_iterm2() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -369,7 +370,7 @@ function install_oh_my_zsh() {
   else
     echo_c "  • Oh My Zsh already installed" "${GREEN}"
   fi
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -382,7 +383,7 @@ function install_oh_my_zsh() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -396,7 +397,7 @@ function install_vundle() {
   else
     echo_c "  • Vundle already installed" "${GREEN}"
   fi
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -409,7 +410,7 @@ function install_vundle() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -428,7 +429,7 @@ function install_powerline_fonts() {
   else
     echo_c "  • Powerline fonts already installed" "${GREEN}"
   fi
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -439,7 +440,7 @@ function install_powerline_fonts() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs. ssh-keygen exits 1 if the
 #   output keyfile already exists
@@ -458,23 +459,23 @@ function generate_ssh_keys() {
     echo_c "  • Public key:" "${WHITE}"
     cat "${HOME}/.ssh/id_rsa.pub"
     echo_c "  • Add your public key to GitHub, GitLab, etc." "${YELLOW}"
-    echo_c "    Press Enter to continue" "${WHITE}"
+    echo_c "    Press ENTER to continue" "${WHITE}"
     read -rn 1
   else
     echo_c "  • SSH key pair already exists" "${GREEN}"
   fi
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
 # Set up workspace (github.com/nickolashkraus) if it does not exist.
 #
 # Globals:
-#   None
+#   GITHUB_ACCESS_TOKEN (set via command-line or user prompt)
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -490,11 +491,11 @@ function set_up_workspace() {
       brew install jq
     fi
     curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/git-clone-gh \
-      | /bin/bash -s -- --user nickolashkraus "${GITHUB_ACCESS_TOKEN}"
+      | /bin/bash -s -- --user nickolashkraus --skip-archived "${GITHUB_ACCESS_TOKEN}"
   else
     echo_c "  • Workspace (nickolashkraus) already exists" "${GREEN}"
   fi
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -505,7 +506,7 @@ function set_up_workspace() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -516,7 +517,7 @@ function install_homebrew_packages() {
   brew bundle --file="${HOME}/nickolashkraus/dotfiles/Brewfile"
   echo_c "  • Upgrading Homebrew packages..."
   brew upgrade
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -527,7 +528,7 @@ function install_homebrew_packages() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 #
@@ -540,7 +541,7 @@ function install_java() {
   echo_c "##################" "${WHITE}"
   echo_c "Installing Java..." "${WHITE}"
   echo_c "##################" "${WHITE}"
-  if [[ "$(command -v java)" == '/usr/bin/java' ]]; then
+  if [[ "$(command -v java)" != '/opt/homebrew/opt/openjdk@19/bin/java' ]]; then
     brew install java
     # For the system Java wrappers to find this JDK, symlink it with:
     sudo ln -sfn "$(brew --prefix)/opt/openjdk@19/libexec/openjdk.jdk" /Library/Java/JavaVirtualMachines/openjdk-19.jdk
@@ -554,7 +555,7 @@ function install_java() {
   else
     echo_c "  • Java already installed" "${GREEN}"
   fi
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -563,11 +564,11 @@ function install_java() {
 # pyenv: https://github.com/pyenv/pyenv
 #
 # Globals:
-#   PYTHON_VERSION (see `var`)
+#   PYTHON_VERSION (set via command-line or user prompt)
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -583,23 +584,24 @@ function install_python() {
     # '--enable-framework' option is required by YouCompleteMe
     export PYTHON_CONFIGURE_OPTS="--enable-framework"
     pyenv install "${PYTHON_VERSION}"
+    pyenv shell "${PYTHON_VERSION}"
     python -m pip install --upgrade pip
     echo_c "  • Python ${PYTHON_VERSION} installed" "${WHITE}"
   else
     echo_c "  • Python ${PYTHON_VERSION} already installed" "${GREEN}"
   fi
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
 # Set up 'default' virtual environment.
 #
 # Globals:
-#   None
+#   PYTHON_VERSION (set via command-line or user prompt)
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -607,22 +609,19 @@ function set_up_virtualenv() {
   echo_c "########################" "${WHITE}"
   echo_c "Setting up virtualenv..." "${WHITE}"
   echo_c "########################" "${WHITE}"
-  if ! workon default; then
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+  if ! pyenv activate default; then
     echo_c "  • Setting up 'default' virtual environment..." "${WHITE}"
-    pyenv shell "${PYTHON_VERSION}"
-    pip install virtualenv virtualenvwrapper
-    export WORKON_HOME="${HOME}/.virtualenvs"
-    export VIRTUALENVWRAPPER_PYTHON="${HOME}/.pyenv/shims/python"
-    export VIRTUALENVWRAPPER_VIRTUALENV="${HOME}/.pyenv/shims/virtualenv"
-    pyenv virtualenvwrapper
-    mkvirtualenv default
+    pyenv virtualenv "${PYTHON_VERSION}" default
+    pyenv activate default
     python -m pip install --upgrade pip
-    deactivate
+    pyenv deactivate
     echo_c "  • 'default' virtual environment created" "${WHITE}"
   else
     echo_c "  • 'default' virtual environment already exists" "${GREEN}"
   fi
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -633,7 +632,7 @@ function set_up_virtualenv() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -641,11 +640,11 @@ function install_python_packages() {
   echo_c "#############################" "${WHITE}"
   echo_c "Installing Python packages..." "${WHITE}"
   echo_c "#############################" "${WHITE}"
-  workon default
+  pyenv activate default
   pip install -r "${HOME}/nickolashkraus/dotfiles/requirements.txt"
   deactivate
   echo_c "  • Python packages installed" "${WHITE}"
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -658,7 +657,7 @@ function install_python_packages() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -670,7 +669,7 @@ function install_bash_scripts() {
   ./install
   popd >/dev/null || exit
   echo_c "  • Bash scripts installed" "${WHITE}"
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -683,7 +682,7 @@ function install_bash_scripts() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -695,7 +694,7 @@ function install_dotfiles() {
   ./install
   popd >/dev/null || exit
   echo_c "  • dotfiles installed" "${WHITE}"
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -708,7 +707,7 @@ function install_dotfiles() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -720,7 +719,7 @@ function install_vim_scripts() {
   ./install
   popd >/dev/null || exit
   echo_c "  • Vim scripts installed" "${WHITE}"
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -731,7 +730,7 @@ function install_vim_scripts() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -741,7 +740,7 @@ function install_vim_plugins() {
   echo_c "#########################" "${WHITE}"
   vim +PluginClean +qall && vim +PluginInstall +qall && vim +PluginUpdate +qall
   echo_c "  • Vim plugins installed" "${WHITE}"
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -754,7 +753,7 @@ function install_vim_plugins() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -768,7 +767,7 @@ function install_fzf() {
   else
     echo_c "  • fzf already installed" "${GREEN}"
   fi
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -781,7 +780,7 @@ function install_fzf() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -793,7 +792,7 @@ function install_ycm() {
   python ./install.py --all
   popd >/dev/null || exit
   echo_c "  • YouCompleteMe installed" "${WHITE}"
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -809,7 +808,7 @@ function install_ycm() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -824,10 +823,12 @@ function install_yabai() {
     echo_c "  • To automatically load the scripting addition on startup, add the following sudoers file:" "${YELLOW}"
     echo_c "      sudo visudo -f /private/etc/sudoers.d/yabai" "${YELLOW}"
     echo_c "      $(whoami) ALL = (root) NOPASSWD: $(brew --prefix)/bin/yabai --load-sa" "${YELLOW}"
+    echo_c
+    echo_c "    Press ENTER to continue" "${WHITE}"
     read -rn 1
   fi
   echo_c "  • yabai installed" "${WHITE}"
-  echo_c ""
+  echo_c
 }
 
 ###############################################################################
@@ -840,7 +841,7 @@ function install_yabai() {
 # Arguments:
 #   None
 # Outputs:
-#   Execution logging to the standard output
+#   Execution logging to standard output
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
@@ -850,5 +851,5 @@ function install_skhd() {
   echo_c "##################" "${WHITE}"
   brew services start skhd
   echo_c "  • skhd installed" "${WHITE}"
-  echo_c ""
+  echo_c
 }
