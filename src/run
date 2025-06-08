@@ -1,12 +1,66 @@
 #!/bin/bash
 #
-# RUN
+# Main entrypoint for nhk-mac. Handles command-line options and executes
+# functions defined in `src/func`.
 #
-# Execute all functions defined in `func`.
+# USAGE:
+#
+#   source src/run
 
 source src/color
 source src/func
-source src/var
+
+HOSTNAME=""
+PYTHON_VERSION=""
+GITHUB_ACCESS_TOKEN=""
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --hostname)
+      HOSTNAME="$2"
+      shift 2
+      ;;
+    --python-version)
+      PYTHON_VERSION="$2"
+      shift 2
+      ;;
+    --github-access-token)
+      GITHUB_ACCESS_TOKEN="$2"
+      shift 2
+      ;;
+    *)
+      echo_c "Unknown option: $1" "${RED}"
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+export HOSTNAME
+export PYTHON_VERSION
+export GITHUB_ACCESS_TOKEN
+
+if [[ -z "${HOSTNAME}" ]]; then
+  echo_c "Enter a hostname for this machine:" "${WHITE}"
+  read -r HOSTNAME
+  export HOSTNAME
+fi
+
+if [[ -z "${PYTHON_VERSION}" ]]; then
+  echo_c "Enter a Python version to install (e.g., 3.13.0):" "${WHITE}"
+  read -r PYTHON_VERSION
+  export PYTHON_VERSION
+fi
+
+if [[ -z "${GITHUB_ACCESS_TOKEN}" ]]; then
+  echo_c "Enter your GitHub access token:" "${WHITE}"
+  read -r GITHUB_ACCESS_TOKEN
+  export GITHUB_ACCESS_TOKEN
+fi
 
 welcome
 check_sip

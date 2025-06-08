@@ -1,8 +1,0 @@
-#!/bin/bash
-#
-# VARIABLES
-#
-# This file is sourced by `run`.
-
-export HOSTNAME="Nickolas-Kraus"
-export PYTHON_VERSION='3.10.3'
