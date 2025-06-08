@@ -1,15 +1,41 @@
 #!/bin/bash
 #
-# COLORS
+# Sets environment variables for colorized terminal output.
 #
-# This file is sourced by `run`.
+# USAGE:
+#
+#   source src/color
+#
+#   echo -en "${WHITE}" 'Hello, World!' "${RESET}"
 
-export BLACK="\033[0;30m"
-export RED="\033[0;31m"
-export GREEN="\033[0;32m"
-export YELLOW="\033[0;33m"
-export BLUE="\033[0;34m"
-export PURPLE="\033[0;35m"
-export CYAN="\033[0;36m"
-export WHITE="\033[0;37m"
-export RESET="\033[0m"
+# Enable colors only in a TTY (and respect NO_COLOR (https://no-color.org).
+if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
+  export BLACK='\033[0;30m'
+  readonly BLACK
+  export RED='\033[0;31m'
+  readonly RED
+  export GREEN='\033[0;32m'
+  readonly GREEN
+  export YELLOW='\033[0;33m'
+  readonly YELLOW
+  export BLUE='\033[0;34m'
+  readonly BLUE
+  export PURPLE='\033[0;35m'
+  readonly PURPLE
+  export CYAN='\033[0;36m'
+  readonly CYAN
+  export WHITE='\033[0;37m'
+  readonly WHITE
+  export RESET='\033[0m'
+  readonly RESET
+else
+  export BLACK=''
+  export RED=''
+  export GREEN=''
+  export YELLOW=''
+  export BLUE=''
+  export PURPLE=''
+  export CYAN=''
+  export WHITE=''
+  export RESET=''
+fi
