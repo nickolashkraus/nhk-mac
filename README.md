@@ -25,5 +25,5 @@ cd nhk-mac
 3. Run `nhk-mac` (use `--help` for options).
 
 ```bash
-./nhk-mac [--help]
+./nhk-mac
 ```
