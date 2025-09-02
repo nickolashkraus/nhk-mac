@@ -1,9 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
-# Main entrypoint for nhk-mac. Handles command-line options and executes
-# functions defined in `src/func`.
+# DESCRIPTION
+#   Main entrypoint for nhk-mac.
+#   Handles command-line options and executes functions defined in `src/func`.
 #
-# USAGE:
+# USAGE
 #
 #   source src/run
 

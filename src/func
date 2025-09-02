@@ -1,15 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
-# Defines functions for nhk-mac. Each function handles a specific task for
-# setting up a new macOS workstation.
+# DESCRIPTION
+#   Defines functions for nhk-mac.
 #
-# USAGE:
+#   Each function handles a specific task for setting up a new macOS
+#   workstation.
+#
+# USAGE
 #
 #   source src/func
-#
 #   welcome
-#
-# For global color variables (WHITE, RED, RESET, etc.), see `src/color`.
 
 ###############################################################################
 # Write a string to standard output with color. If a color ($2) is not

@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
-# Sets environment variables for colorized terminal output.
+# DESCRIPTION
+#   Sets environment variables for colorized terminal output.
 #
-# USAGE:
+# USAGE
 #
 #   source src/color
-#
 #   echo -en "${WHITE}" 'Hello, World!' "${RESET}"
 
 # Enable colors only in a TTY (and respect NO_COLOR (https://no-color.org).
