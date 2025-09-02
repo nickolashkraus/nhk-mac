@@ -30,12 +30,21 @@ if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
   readonly RESET
 else
   export BLACK=''
+  readonly BLACK
   export RED=''
+  readonly RED
   export GREEN=''
+  readonly GREEN
   export YELLOW=''
+  readonly YELLOW
   export BLUE=''
+  readonly BLUE
   export PURPLE=''
+  readonly PURPLE
   export CYAN=''
+  readonly CYAN
   export WHITE=''
+  readonly WHITE
   export RESET=''
+  readonly RESET
 fi
