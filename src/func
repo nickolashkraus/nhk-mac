@@ -466,6 +466,7 @@ function set_up_workspace() {
     fi
     curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/git-clone-gh |
       /bin/bash -s -- --user nickolashkraus --skip-archived "${GITHUB_ACCESS_TOKEN}"
+    popd >/dev/null || exit
   else
     echo_c "  • Workspace (nickolashkraus) already exists" "${GREEN}"
   fi
