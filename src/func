@@ -290,33 +290,6 @@ function install_homebrew() {
 }
 
 ###############################################################################
-# Install Homebrew Bundle (brew bundle) if it is not already installed.
-#
-# Homebrew Bundle: https://github.com/Homebrew/homebrew-bundle
-#
-# Globals:
-#   None
-# Arguments:
-#   None
-# Outputs:
-#   Execution logging to standard output
-# Returns:
-#   Exits 0 on success, and >0 if an error occurs
-###############################################################################
-function install_homebrew_bundle() {
-  echo_c "#############################" "${WHITE}"
-  echo_c "Installing Homebrew Bundle..." "${WHITE}"
-  echo_c "#############################" "${WHITE}"
-  # Homebrew Bundle is automatically installed when first run.
-  if brew bundle; then
-    echo_c "  • Homebrew Bundle installed" "${WHITE}"
-  else
-    echo_c "  • Homebrew Bundle already installed" "${GREEN}"
-  fi
-  echo_c
-}
-
-###############################################################################
 # Install iTerm2 if it is not already installed.
 #
 # iTerm2: https://iterm2.com
