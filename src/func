@@ -507,7 +507,7 @@ function install_homebrew_packages() {
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 #
-# The 'java' Homebrew formula is key-only. This means the formula is installed
+# The 'java' Homebrew formula is keg-only. This means the formula is installed
 # only into the Cellar and is not linked into the default prefix.
 #
 # https://docs.brew.sh/FAQ#what-does-keg-only-mean
