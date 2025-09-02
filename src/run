@@ -16,7 +16,7 @@ GITHUB_ACCESS_TOKEN=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
-    -h|--help)
+    -h | --help)
       usage
       exit 0
       ;;
@@ -72,18 +72,15 @@ install_homebrew
 install_homebrew_bundle
 install_iterm2
 install_oh_my_zsh
-install_vundle
+install_vim_plugin_manager
 install_powerline_fonts
 generate_ssh_keys
 set_up_workspace
-install_homebrew_packages
 install_java
 install_python
 set_up_virtualenv
-install_python_packages
 install_bash_scripts
 install_dotfiles
-install_vim_scripts
 install_vim_plugins
 install_fzf
 install_ycm

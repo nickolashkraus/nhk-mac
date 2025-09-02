@@ -374,9 +374,9 @@ function install_oh_my_zsh() {
 }
 
 ###############################################################################
-# Install Vundle if it is not already installed.
+# Install vim-plug if it is not already installed.
 #
-# Vundle: https://github.com/VundleVim/Vundle.vim
+# vim-plug: https://github.com/junegunn/vim-plug
 #
 # Globals:
 #   None
@@ -387,15 +387,16 @@ function install_oh_my_zsh() {
 # Returns:
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
-function install_vundle() {
-  echo_c "####################" "${WHITE}"
-  echo_c "Installing Vundle..." "${WHITE}"
-  echo_c "####################" "${WHITE}"
-  if [ ! -d "${HOME}/.vim/bundle/Vundle.vim" ]; then
-    git clone https://github.com/VundleVim/Vundle.vim.git "${HOME}/.vim/bundle/Vundle.vim"
-    echo_c "  • Vundle installed" "${WHITE}"
+function install_vim_plugin_manager() {
+  echo_c "######################" "${WHITE}"
+  echo_c "Installing vim-plug..." "${WHITE}"
+  echo_c "######################" "${WHITE}"
+  if [ ! -f "${HOME}/.vim/autoload/plug.vim" ]; then
+    curl -fLo "${HOME}/.vim/autoload/plug.vim" --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    echo_c "  • vim-plug installed" "${WHITE}"
   else
-    echo_c "  • Vundle already installed" "${GREEN}"
+    echo_c "  • vim-plug already installed" "${GREEN}"
   fi
   echo_c
 }
@@ -453,8 +454,8 @@ function generate_ssh_keys() {
     mkdir -p "${HOME}/.ssh"
   fi
   if [ ! -f "${HOME}/.ssh/id_rsa" ]; then
-    curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/generate-ssh-keys \
-      | /bin/bash -s -- -f id_rsa
+    curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/generate-ssh-keys |
+      /bin/bash -s -- -f id_rsa
     echo_c "  • SSH key pair generated" "${WHITE}"
     echo_c "  • Public key:" "${WHITE}"
     cat "${HOME}/.ssh/id_rsa.pub"
@@ -490,8 +491,8 @@ function set_up_workspace() {
     if ! [ -x "$(command -v jq)" ]; then
       brew install jq
     fi
-    curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/git-clone-gh \
-      | /bin/bash -s -- --user nickolashkraus --skip-archived "${GITHUB_ACCESS_TOKEN}"
+    curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/git-clone-gh |
+      /bin/bash -s -- --user nickolashkraus --skip-archived "${GITHUB_ACCESS_TOKEN}"
   else
     echo_c "  • Workspace (nickolashkraus) already exists" "${GREEN}"
   fi
@@ -625,29 +626,6 @@ function set_up_virtualenv() {
 }
 
 ###############################################################################
-# Install Python packages via pip.
-#
-# Globals:
-#   None
-# Arguments:
-#   None
-# Outputs:
-#   Execution logging to standard output
-# Returns:
-#   Exits 0 on success, and >0 if an error occurs
-###############################################################################
-function install_python_packages() {
-  echo_c "#############################" "${WHITE}"
-  echo_c "Installing Python packages..." "${WHITE}"
-  echo_c "#############################" "${WHITE}"
-  pyenv activate default
-  pip install -r "${HOME}/nickolashkraus/dotfiles/requirements.txt"
-  deactivate
-  echo_c "  • Python packages installed" "${WHITE}"
-  echo_c
-}
-
-###############################################################################
 # Install Bash scripts.
 #
 # Bash scripts: https://github.com/nickolashkraus/bash-scripts
@@ -698,32 +676,7 @@ function install_dotfiles() {
 }
 
 ###############################################################################
-# Install Vim scripts.
-#
-# Vim scripts: https://github.com/nickolashkraus/vim-scripts
-#
-# Globals:
-#   None
-# Arguments:
-#   None
-# Outputs:
-#   Execution logging to standard output
-# Returns:
-#   Exits 0 on success, and >0 if an error occurs
-###############################################################################
-function install_vim_scripts() {
-  echo_c "#########################" "${WHITE}"
-  echo_c "Installing Vim scripts..." "${WHITE}"
-  echo_c "#########################" "${WHITE}"
-  pushd "${HOME}/nickolashkraus/vim-scripts" >/dev/null || exit
-  ./install
-  popd >/dev/null || exit
-  echo_c "  • Vim scripts installed" "${WHITE}"
-  echo_c
-}
-
-###############################################################################
-# Install Vim plugins via Vundle.
+# Install Vim plugins via vim-plug.
 #
 # Globals:
 #   None
@@ -738,7 +691,7 @@ function install_vim_plugins() {
   echo_c "#########################" "${WHITE}"
   echo_c "Installing Vim plugins..." "${WHITE}"
   echo_c "#########################" "${WHITE}"
-  vim +PluginClean +qall && vim +PluginInstall +qall && vim +PluginUpdate +qall
+  vim +PlugClean +qall && vim +PlugInstall +qall && vim +PlugUpdate +qall
   echo_c "  • Vim plugins installed" "${WHITE}"
   echo_c
 }
@@ -789,6 +742,9 @@ function install_ycm() {
   echo_c "Installing YouCompleteMe..." "${WHITE}"
   echo_c "###########################" "${WHITE}"
   pushd "${HOME}/.vim/bundle/YouCompleteMe" >/dev/null || exit
+  # WARNING: setuptools unavailable. Watchdog will fall back to the slower
+  # kqueue filesystem event API.
+  pip install setuptools
   python ./install.py --all
   popd >/dev/null || exit
   echo_c "  • YouCompleteMe installed" "${WHITE}"
@@ -822,7 +778,7 @@ function install_yabai() {
   if [ ! -e '/private/etc/sudoers.d/yabai' ]; then
     echo_c "  • To automatically load the scripting addition on startup, add the following sudoers file:" "${YELLOW}"
     echo_c "      sudo visudo -f /private/etc/sudoers.d/yabai" "${YELLOW}"
-    echo_c "      $(whoami) ALL = (root) NOPASSWD: $(brew --prefix)/bin/yabai --load-sa" "${YELLOW}"
+    echo_c "      $(whoami) ALL=(root) NOPASSWD: $(brew --prefix)/bin/yabai --load-sa" "${YELLOW}"
     echo_c
     echo_c "    Press ENTER to continue" "${WHITE}"
     read -rn 1
