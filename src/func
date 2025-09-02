@@ -278,7 +278,7 @@ function install_homebrew() {
   # installed nor configured.
   eval "$(/opt/homebrew/bin/brew shellenv)" >/dev/null 2>&1
   if [ ! -x "$(command -v brew)" ]; then
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     echo_c "  • Homebrew installed" "${WHITE}"
     eval "$(brew shellenv)"
   else
@@ -428,7 +428,7 @@ function generate_ssh_keys() {
   fi
   if [ ! -f "${HOME}/.ssh/id_rsa" ]; then
     curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/generate-ssh-keys |
-      /bin/bash -s -- -f id_rsa
+      bash -s -- -f id_rsa
     echo_c "  • SSH key pair generated" "${WHITE}"
     echo_c "  • Public key:" "${WHITE}"
     cat "${HOME}/.ssh/id_rsa.pub"
@@ -465,7 +465,7 @@ function set_up_workspace() {
       brew install jq
     fi
     curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/git-clone-gh |
-      /bin/bash -s -- --user nickolashkraus --skip-archived "${GITHUB_ACCESS_TOKEN}"
+      bash -s -- --user nickolashkraus --skip-archived "${GITHUB_ACCESS_TOKEN}"
     popd >/dev/null || exit
   else
     echo_c "  • Workspace (nickolashkraus) already exists" "${GREEN}"
