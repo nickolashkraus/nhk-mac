@@ -306,8 +306,10 @@ function install_homebrew_packages() {
   echo_c "###############################" "${WHITE}"
   echo_c "Installing Homebrew packages..." "${WHITE}"
   echo_c "###############################" "${WHITE}"
-  curl -fsSL https://raw.githubusercontent.com/nickolashkraus/dotfiles/refs/heads/master/Brewfile |
-    brew bundle --file=-
+  curl -fsSL https://raw.githubusercontent.com/nickolashkraus/dotfiles/refs/heads/master/Brewfile \
+    -o Brewfile
+  brew bundle --file=Brewfile
+  rm Brewfile
   echo_c "  • Upgrading Homebrew packages..."
   brew upgrade
   echo_c
@@ -451,8 +453,11 @@ function generate_ssh_keys() {
     mkdir -p "${HOME}/.ssh"
   fi
   if [ ! -f "${HOME}/.ssh/id_rsa" ]; then
-    curl -fsSL https://raw.githubusercontent.com/nickolashkraus/bash-scripts/master/generate-ssh-keys |
-      bash -s -- -f id_rsa
+    curl -fsSL https://raw.githubusercontent.com/nickolashkraus/bash-scripts/master/generate-ssh-keys \
+      -o generate-ssh-keys
+    chmod +x generate-ssh-keys
+    ./generate-ssh-keys -f id_rsa
+    rm generate-ssh-keys
     echo_c "  • SSH key pair generated" "${WHITE}"
     echo_c "  • Public key:" "${WHITE}"
     cat "${HOME}/.ssh/id_rsa.pub"
@@ -488,8 +493,11 @@ function set_up_workspace() {
     if ! [ -x "$(command -v jq)" ]; then
       brew install jq
     fi
-    curl -fsSL https://raw.githubusercontent.com/nickolashkraus/bash-scripts/master/git-clone-gh |
-      bash -s -- --user nickolashkraus --skip-archived "${GITHUB_ACCESS_TOKEN}"
+    curl -fsSL https://raw.githubusercontent.com/nickolashkraus/bash-scripts/master/git-clone-gh \
+      -o git-clone-gh
+    chmod +x git-clone-gh
+    ./git-clone-gh --user nickolashkraus --skip-archived "${GITHUB_ACCESS_TOKEN}"
+    rm git-clone-gh
     popd >/dev/null || exit
   else
     echo_c "  • Workspace (nickolashkraus) already exists" "${GREEN}"
