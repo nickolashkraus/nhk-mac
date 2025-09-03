@@ -147,12 +147,16 @@ function set_hostname() {
   echo_c "###################" "${WHITE}"
   echo_c "Setting hostname..." "${WHITE}"
   echo_c "###################" "${WHITE}"
-  echo_c "  • Setting hostname to ${HOSTNAME}"
   if [ -z "${HOSTNAME}" ]; then
     echo_c "ERROR: HOSTNAME must be set." "${RED}"
     exit 1
   fi
-  sudo scutil --set HostName "${HOSTNAME}"
+  if [ "$(scutil --get HostName)" != "${HOSTNAME}" ]; then
+    echo_c "  • Setting hostname to ${HOSTNAME}"
+    sudo scutil --set HostName "${HOSTNAME}"
+  else
+    echo_c "  • Hostname already set" "${GREEN}"
+  fi
   echo_c
 }
 
