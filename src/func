@@ -179,9 +179,9 @@ function configure_keyboard() {
   # See the man pages for `defaults` for further details.
   echo_c "  • Disabling 'Press and Hold' for special characters"
   defaults write -g ApplePressAndHoldEnabled -bool false
-  echo_c "  • Setting initial key repeat to 15 (225 ms). Default 15 (225 ms)"
-  defaults write -g InitialKeyRepeat -int 15
-  echo_c "  • Setting key repeat to 2 (30 ms). Default 2 (30 ms)"
+  echo_c "  • Setting initial key repeat to 15 (240 ms)"
+  defaults write -g InitialKeyRepeat -int 16
+  echo_c "  • Setting key repeat to 2 (30 ms)"
   defaults write -g KeyRepeat -int 2
   echo_c
 }
@@ -204,7 +204,7 @@ function configure_dock() {
   echo_c "###################" "${WHITE}"
   echo_c "Configuring Dock..." "${WHITE}"
   echo_c "###################" "${WHITE}"
-  echo_c "  • Setting orientation to left"
+  echo_c "  • Setting orientation to right"
   defaults write com.apple.dock 'orientation' -string 'right'
   echo_c "  • Enabling auto hide"
   defaults write com.apple.dock autohide -bool true
@@ -282,6 +282,7 @@ function install_homebrew() {
     echo_c "  • Homebrew installed" "${WHITE}"
     eval "$(brew shellenv)"
   else
+    eval "$(brew shellenv)"
     echo_c "  • Homebrew already installed" "${GREEN}"
   fi
   echo_c "  • Updating Homebrew..."
@@ -516,7 +517,7 @@ function install_java() {
   echo_c "##################" "${WHITE}"
   echo_c "Installing Java..." "${WHITE}"
   echo_c "##################" "${WHITE}"
-  if [[ "$(command -v java)" != '/opt/homebrew/opt/openjdk@24/bin/java' ]]; then
+  if [[ "$(command -v java)" != "$(brew --prefix)/opt/openjdk@24/bin/java" ]]; then
     brew install java
     # For the system Java wrappers to find this JDK, symlink it with:
     sudo ln -sfn "$(brew --prefix)/opt/openjdk@24/libexec/openjdk.jdk" /Library/Java/JavaVirtualMachines/openjdk-24.jdk
@@ -525,7 +526,7 @@ function install_java() {
     PATH="$(brew --prefix)/opt/openjdk@24/bin:$PATH"
     export PATH
     # For compilers to find openjdk@24 you may need to set:
-    export CPPFLAGS="-I/opt/homebrew/opt/openjdk@24/include"
+    export CPPFLAGS="-I$(brew --prefix)/opt/openjdk@24/include"
     echo_c "  • Java installed" "${WHITE}"
   else
     echo_c "  • Java already installed" "${GREEN}"
