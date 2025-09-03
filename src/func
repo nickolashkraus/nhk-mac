@@ -601,7 +601,7 @@ function set_up_virtualenv() {
   echo_c "########################" "${WHITE}"
   eval "$(pyenv init -)"
   eval "$(pyenv virtualenv-init -)"
-  if [ "$(pyenv version-name)" != "${PYENV_VERSION}" ]; then
+  if [ -z "${PYENV_VERSION}" ] || [ "$(pyenv version-name)" != "${PYENV_VERSION}" ]; then
     echo_c "  • Setting up 'default' virtual environment..." "${WHITE}"
     pyenv virtualenv "${PYTHON_VERSION}" default
     pyenv activate default
