@@ -179,7 +179,7 @@ function configure_keyboard() {
   # See the man pages for `defaults` for further details.
   echo_c "  • Disabling 'Press and Hold' for special characters"
   defaults write -g ApplePressAndHoldEnabled -bool false
-  echo_c "  • Setting initial key repeat to 15 (240 ms)"
+  echo_c "  • Setting initial key repeat to 16 (240 ms)"
   defaults write -g InitialKeyRepeat -int 16
   echo_c "  • Setting key repeat to 2 (30 ms)"
   defaults write -g KeyRepeat -int 2
