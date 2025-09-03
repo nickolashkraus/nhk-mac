@@ -451,7 +451,7 @@ function generate_ssh_keys() {
     mkdir -p "${HOME}/.ssh"
   fi
   if [ ! -f "${HOME}/.ssh/id_rsa" ]; then
-    curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/generate-ssh-keys |
+    curl -fsSL https://raw.githubusercontent.com/nickolashkraus/bash-scripts/master/generate-ssh-keys |
       bash -s -- -f id_rsa
     echo_c "  • SSH key pair generated" "${WHITE}"
     echo_c "  • Public key:" "${WHITE}"
@@ -488,7 +488,7 @@ function set_up_workspace() {
     if ! [ -x "$(command -v jq)" ]; then
       brew install jq
     fi
-    curl -fsSL https://raw.github.com/nickolashkraus/bash-scripts/master/git-clone-gh |
+    curl -fsSL https://raw.githubusercontent.com/nickolashkraus/bash-scripts/master/git-clone-gh |
       bash -s -- --user nickolashkraus --skip-archived "${GITHUB_ACCESS_TOKEN}"
     popd >/dev/null || exit
   else
