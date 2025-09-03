@@ -564,7 +564,7 @@ function install_python() {
   export PYENV_ROOT="$HOME/.pyenv"
   command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init -)"
-  if ! pyenv versions | grep -q "${PYTHON_VERSION}"; then
+  if pyenv versions | grep -q "${PYTHON_VERSION}"; then
     echo_c "  • Installing Python ${PYTHON_VERSION}..." "${WHITE}"
     # '--enable-framework' option is required by YouCompleteMe
     export PYTHON_CONFIGURE_OPTS="--enable-framework"
@@ -597,7 +597,7 @@ function set_up_virtualenv() {
   echo_c "########################" "${WHITE}"
   eval "$(pyenv init -)"
   eval "$(pyenv virtualenv-init -)"
-  if ! pyenv activate default; then
+  if [ "$(pyenv version-name)" != "${PYENV_VERSION}" ]; then
     echo_c "  • Setting up 'default' virtual environment..." "${WHITE}"
     pyenv virtualenv "${PYTHON_VERSION}" default
     pyenv activate default
