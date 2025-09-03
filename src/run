@@ -71,6 +71,7 @@ configure_keyboard
 configure_dock
 install_xcode
 install_homebrew
+install_homebrew_packages
 install_iterm2
 install_oh_my_zsh
 install_vim_plugin_manager

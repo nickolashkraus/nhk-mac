@@ -291,6 +291,29 @@ function install_homebrew() {
 }
 
 ###############################################################################
+# Install Homebrew packages via Homebrew Bundle.
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function install_homebrew_packages() {
+  echo_c "###############################" "${WHITE}"
+  echo_c "Installing Homebrew packages..." "${WHITE}"
+  echo_c "###############################" "${WHITE}"
+  curl -fsSL https://raw.githubusercontent.com/nickolashkraus/dotfiles/refs/heads/master/Brewfile |
+    brew bundle --file=-
+  echo_c "  • Upgrading Homebrew packages..."
+  brew upgrade
+  echo_c
+}
+
+###############################################################################
 # Install iTerm2 if it is not already installed.
 #
 # iTerm2: https://iterm2.com
@@ -471,28 +494,6 @@ function set_up_workspace() {
   else
     echo_c "  • Workspace (nickolashkraus) already exists" "${GREEN}"
   fi
-  echo_c
-}
-
-###############################################################################
-# Install Homebrew packages via Homebrew Bundle.
-#
-# Globals:
-#   None
-# Arguments:
-#   None
-# Outputs:
-#   Execution logging to standard output
-# Returns:
-#   Exits 0 on success, and >0 if an error occurs
-###############################################################################
-function install_homebrew_packages() {
-  echo_c "###############################" "${WHITE}"
-  echo_c "Installing Homebrew packages..." "${WHITE}"
-  echo_c "###############################" "${WHITE}"
-  brew bundle --file="${HOME}/nickolashkraus/dotfiles/Brewfile"
-  echo_c "  • Upgrading Homebrew packages..."
-  brew upgrade
   echo_c
 }
 
