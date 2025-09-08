@@ -582,7 +582,7 @@ function install_python() {
   export PYENV_ROOT="$HOME/.pyenv"
   command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init -)"
-  if ! pyenv versions | grep -q "${PYTHON_VERSION}"; then
+  if pyenv versions | grep -q "${PYTHON_VERSION}"; then
     echo_c "  • Installing Python ${PYTHON_VERSION}..." "${YELLOW}"
     # '--enable-framework' option is required by YouCompleteMe
     export PYTHON_CONFIGURE_OPTS="--enable-framework"
@@ -799,12 +799,12 @@ function install_skhd() {
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
 function configure_gui_applications() {
-  echo_c "#############################" "${YELLOW}"
-  echo_c "Configure GUI applications..." "${YELLOW}"
-  echo_c "#############################" "${YELLOW}"
+  echo_c "####################################################################" "${WHITE}"
+  echo_c "Configure GUI applications..." "${WHITE}"
+  echo_c "####################################################################" "${WHITE}"
   if [ -d '/Applications/Firefox.app' ]; then
     echo_c "  • Firefox installed" "${YELLOW}"
-    echo_c "  • To configure Firefox, open the application, then click the user icon to sign in." "${YELLOW}"
+    echo_c "    To configure Firefox, open the application, then click the user icon to sign in." "${YELLOW}"
     echo_c
     echo_c "    Configure extensions (Dark Reader, Firefox Color, LastPass, Vimium)." "${YELLOW}"
     echo_c
@@ -813,17 +813,17 @@ function configure_gui_applications() {
   fi
   if [ -d '/Applications/Alfred 5.app' ]; then
     echo_c "  • Alfred 5 installed" "${YELLOW}"
-    echo_c "  • To configure Alfred 5, open the application, then click Begin Setup..." "${YELLOW}"
+    echo_c "    To configure Alfred 5, open the application, then click Begin Setup…" "${YELLOW}"
     echo_c "    Enter your Alfred 5 Powerpack License." "${YELLOW}"
     echo_c "    Configure macOS permissions." "${YELLOW}"
     echo_c
-    echo_c "  • Disable Spotlight search." "${YELLOW}"
+    echo_c "    Disable Spotlight search." "${YELLOW}"
     echo_c "    Go to System Settings > Keyboard > Keyboard Shortcuts…. " "${YELLOW}"
     echo_c "    Under Spotlight, uncheck 'Show Spotlight search'." "${YELLOW}"
     echo_c "    Set Alfred Hotkey to Command (⌘) Space." "${YELLOW}"
     echo_c
-    echo_c "  • Set preferences folder." "${YELLOW}"
-    echo_c "    Under Advanced, click 'Set preferences folder...', then" "${YELLOW}"
+    echo_c "    Set preferences folder." "${YELLOW}"
+    echo_c "    Under Advanced, click 'Set preferences folder…', then add:" "${YELLOW}"
     echo_c "    /Users/$(whoami)/nickolashkraus/dotfiles/Alfred" "${YELLOW}"
     echo_c
     echo_c "    Press ENTER to continue" "${YELLOW}"
@@ -831,8 +831,8 @@ function configure_gui_applications() {
   fi
   if [ -d '/Applications/iTerm.app' ]; then
     echo_c "  • iTerm2 installed" "${YELLOW}"
-    echo_c "  • To load settings from a custom folder, open the application, then" "${YELLOW}"
-    echo_c "    click Settings... > General > Settings" "${YELLOW}"
+    echo_c "    To load settings from a custom folder, open the application, then" "${YELLOW}"
+    echo_c "    click Settings… > General > Settings" "${YELLOW}"
     echo_c
     echo_c "    Check 'Load settings from a custom folder or URL', then add:" "${YELLOW}"
     echo_c "    /Users/$(whoami)/nickolashkraus/dotfiles/iTerm2" "${YELLOW}"
