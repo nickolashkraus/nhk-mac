@@ -8,7 +8,7 @@
 #   source src/color
 #   echo -en "${WHITE}" 'Hello, World!' "${RESET}"
 
-# Enable colors only in a TTY (and respect NO_COLOR (https://no-color.org).
+# Enable colors only in a TTY and respect NO_COLOR (https://no-color.org).
 if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
   export BLACK='\033[0;30m'
   readonly BLACK
