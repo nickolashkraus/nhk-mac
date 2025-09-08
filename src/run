@@ -69,6 +69,7 @@ check_sip
 set_hostname
 configure_keyboard
 configure_dock
+configure_system_settings
 install_xcode
 install_homebrew
 install_homebrew_packages
@@ -86,7 +87,12 @@ install_vim_plugins
 install_fzf
 install_yabai
 install_skhd
+configure_gui_applications
 
 echo_c "####################################################################" "${WHITE}"
 echo_c "Setup completed successfully!" "${GREEN}"
 echo_c "####################################################################" "${WHITE}"
+echo_c
+echo_c "Reboot for changes to take effect." "${YELLOW}"
+echo_c "sudo reboot" "${YELLOW}"
+echo_c

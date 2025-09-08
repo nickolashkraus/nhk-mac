@@ -73,7 +73,7 @@ function usage() {
 #   Exits 0 on success, and >0 if an error occurs
 ###############################################################################
 function welcome() {
-  echo_c "                                                                        " "${WHITE}"
+  echo_c
   echo_c "                      _     _                                           " "${RED}"
   echo_c "                _ __ | |__ | | __     _ __ ___   __ _  ___              " "${YELLOW}"
   echo_c "               | '_ \| '_ \| |/ /____| '_ \` _ \ / _\` |/ __|           " "${GREEN}"
@@ -83,7 +83,7 @@ function welcome() {
   echo_c "                           Welcome to nhk-mac.                          " "${WHITE}"
   echo_c "                                                                        " "${WHITE}"
   echo_c "    nhk-mac is a CLI for quickly setting up a new macOS workstation.    " "${WHITE}"
-  echo_c "                                                                        " "${WHITE}"
+  echo_c
 }
 
 ###############################################################################
@@ -187,6 +187,12 @@ function configure_keyboard() {
   defaults write -g InitialKeyRepeat -int 13
   echo_c "  • Setting key repeat to 1 (15 ms)"
   defaults write -g KeyRepeat -int 1
+  echo_c "  • Rebind Caps Lock to Control:" "${YELLOW}"
+  echo_c
+  echo_c "    Go to System Settings > Keyboard > Keyboard Shortcuts…. " "${YELLOW}"
+  echo_c "    Under Modifier Keys change Caps Lock (⇪) key to ⌃Control" "${YELLOW}"
+  echo_c "    Press ENTER to continue" "${YELLOW}"
+  read -rn 1
   echo_c
 }
 
@@ -231,6 +237,43 @@ function configure_dock() {
 }
 
 ###############################################################################
+# Set system settings via `defaults`.
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+#
+# The `defaults` command provides access to the Mac OS X user defaults system.
+###############################################################################
+function configure_system_settings() {
+  echo_c "##############################" "${WHITE}"
+  echo_c "Configuring System Settings..." "${WHITE}"
+  echo_c "##############################" "${WHITE}"
+  echo_c "  • Setting mouse tracking speed to 1"
+  defaults write -g com.apple.mouse.scaling 1
+  echo_c "  • Setting trackpad tracking speed to 0.875"
+  defaults write -g com.apple.trackpad.scaling 0.875
+  echo_c "  • Setting Finder to open new windows with ${HOME}"
+  defaults write com.apple.finder NewWindowTarget PfHm
+  echo_c "  • Setting Finder to use list view"
+  defaults write com.apple.Finder FXPreferredViewStyle Nlsv
+  echo_c "  • Setting Finder to sort folders before files"
+  defaults write com.apple.finder _FXSortFoldersFirst -bool true
+  echo_c "  • Setting appearence to Dark"
+  defaults write -g AppleInterfaceStyle Dark
+  echo_c "  • Setting accent color to Graphite"
+  defaults write -g AppleAquaColorVariant -int 6
+  echo_c "  • Setting highlight color to #282828"
+  defaults write -g AppleHighlightColor -string "0.156863 0.156863 0.156863 Other"
+  echo_c
+}
+
+###############################################################################
 # Install Git (git) (via Xcode Developer Tools) if it is not already installed.
 #
 # Apple ships a binary package of Git with Xcode:
@@ -251,9 +294,9 @@ function install_xcode() {
   echo_c "####################################################################" "${WHITE}"
   if [ ! -x "$(command -v git)" ]; then
     xcode-select --install
-    echo_c "Press ENTER to continue" "${WHITE}"
+    echo_c "Press ENTER to continue" "${YELLOW}"
     read -rn 1
-    echo_c "  • Xcode Developer Tools installed" "${WHITE}"
+    echo_c "  • Xcode Developer Tools installed" "${YELLOW}"
   else
     echo_c "  • Xcode Developer Tools already installed" "${GREEN}"
   fi
@@ -284,12 +327,12 @@ function install_homebrew() {
   if [ ! -x "$(command -v brew)" ]; then
     bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     eval "$(brew shellenv)"
-    echo_c "  • Homebrew installed" "${WHITE}"
+    echo_c "  • Homebrew installed" "${YELLOW}"
   else
     eval "$(brew shellenv)"
     echo_c "  • Homebrew already installed" "${GREEN}"
   fi
-  echo_c "  • Updating Homebrew..."
+  echo_c "  • Updating Homebrew..." "${YELLOW}"
   brew update && brew upgrade
   echo_c
 }
@@ -339,7 +382,7 @@ function install_oh_my_zsh() {
   echo_c "####################################################################" "${WHITE}"
   if [ ! -d "${HOME}/.oh-my-zsh" ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-    echo_c "  • Oh My Zsh installed" "${WHITE}"
+    echo_c "  • Oh My Zsh installed" "${YELLOW}"
   else
     echo_c "  • Oh My Zsh already installed" "${GREEN}"
   fi
@@ -367,7 +410,7 @@ function install_vim_plug() {
   if [ ! -f "${HOME}/.vim/autoload/plug.vim" ]; then
     curl -fLo "${HOME}/.vim/autoload/plug.vim" --create-dirs \
       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    echo_c "  • vim-plug installed" "${WHITE}"
+    echo_c "  • vim-plug installed" "${YELLOW}"
   else
     echo_c "  • vim-plug already installed" "${GREEN}"
   fi
@@ -399,7 +442,7 @@ function install_powerline_fonts() {
     ./install.sh
     popd >/dev/null || exit
     rm -rf "${fonts_dir}"
-    echo_c "  • Powerline fonts installed" "${WHITE}"
+    echo_c "  • Powerline fonts installed" "${YELLOW}"
   else
     echo_c "  • Powerline fonts already installed" "${GREEN}"
   fi
@@ -432,11 +475,11 @@ function generate_ssh_keys() {
     chmod +x generate-ssh-keys
     ./generate-ssh-keys -f id_rsa
     rm generate-ssh-keys
-    echo_c "  • SSH key pair generated" "${WHITE}"
-    echo_c "  • Public key:" "${WHITE}"
+    echo_c "  • SSH key pair generated" "${YELLOW}"
+    echo_c "  • Public key:" "${YELLOW}"
     cat "${HOME}/.ssh/id_rsa.pub"
     echo_c "  • Add your public key to GitHub, GitLab, etc." "${YELLOW}"
-    echo_c "    Press ENTER to continue" "${WHITE}"
+    echo_c "    Press ENTER to continue" "${YELLOW}"
     read -rn 1
   else
     echo_c "  • SSH key pair already exists" "${GREEN}"
@@ -511,7 +554,7 @@ function install_java() {
     export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
     # For compilers to find openjdk, CPPFLAGS is set.
     export CPPFLAGS="-I$HOMEBREW_PREFIX/opt/openjdk/include"
-    echo_c "  • Java installed" "${WHITE}"
+    echo_c "  • Java installed" "${YELLOW}"
   else
     echo_c "  • Java already installed" "${GREEN}"
   fi
@@ -540,13 +583,13 @@ function install_python() {
   command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init -)"
   if pyenv versions | grep -q "${PYTHON_VERSION}"; then
-    echo_c "  • Installing Python ${PYTHON_VERSION}..." "${WHITE}"
+    echo_c "  • Installing Python ${PYTHON_VERSION}..." "${YELLOW}"
     # '--enable-framework' option is required by YouCompleteMe
     export PYTHON_CONFIGURE_OPTS="--enable-framework"
     pyenv install "${PYTHON_VERSION}"
     pyenv global "${PYTHON_VERSION}"
     python -m pip install --upgrade pip
-    echo_c "  • Python ${PYTHON_VERSION} installed" "${WHITE}"
+    echo_c "  • Python ${PYTHON_VERSION} installed" "${YELLOW}"
   else
     pyenv global "${PYTHON_VERSION}"
     echo_c "  • Python ${PYTHON_VERSION} already installed" "${GREEN}"
@@ -573,10 +616,10 @@ function set_up_virtualenv() {
   eval "$(pyenv init -)"
   eval "$(pyenv virtualenv-init -)"
   if [ -z "${PYENV_VERSION}" ] || [ "$(pyenv version-name)" != "${PYENV_VERSION}" ]; then
-    echo_c "  • Setting up 'default' virtual environment..." "${WHITE}"
+    echo_c "  • Setting up 'default' virtual environment..." "${YELLOW}"
     pyenv virtualenv "${PYTHON_VERSION}" default
     python -m pip install --upgrade pip
-    echo_c "  • 'default' virtual environment created" "${WHITE}"
+    echo_c "  • 'default' virtual environment created" "${YELLOW}"
   else
     pyenv activate default >/dev/null 2>&1
     echo_c "  • 'default' virtual environment already exists" "${GREEN}"
@@ -605,7 +648,7 @@ function install_bash_scripts() {
   pushd "${HOME}/nickolashkraus/bash-scripts" >/dev/null || exit
   ./install
   popd >/dev/null || exit
-  echo_c "  • Bash scripts installed" "${WHITE}"
+  echo_c "  • Bash scripts installed" "${YELLOW}"
   echo_c
 }
 
@@ -630,7 +673,7 @@ function install_dotfiles() {
   pushd "${HOME}/nickolashkraus/dotfiles" >/dev/null || exit
   ./install
   popd >/dev/null || exit
-  echo_c "  • dotfiles installed" "${WHITE}"
+  echo_c "  • dotfiles installed" "${YELLOW}"
   echo_c
 }
 
@@ -651,7 +694,7 @@ function install_vim_plugins() {
   echo_c "Installing Vim plugins..." "${WHITE}"
   echo_c "####################################################################" "${WHITE}"
   vim +PlugClean +qall && vim +PlugInstall +qall && vim +PlugUpdate +qall
-  echo_c "  • Vim plugins installed" "${WHITE}"
+  echo_c "  • Vim plugins installed" "${YELLOW}"
   echo_c
 }
 
@@ -675,7 +718,7 @@ function install_fzf() {
   echo_c "####################################################################" "${WHITE}"
   if [ ! -f "${HOME}/.fzf.zsh" ]; then
     "$(brew --prefix)/opt/fzf/install"
-    echo_c "  • fzf installed" "${WHITE}"
+    echo_c "  • fzf installed" "${YELLOW}"
   else
     echo_c "  • fzf already installed" "${GREEN}"
   fi
@@ -709,10 +752,10 @@ function install_yabai() {
     echo_c "      sudo visudo -f /private/etc/sudoers.d/yabai" "${YELLOW}"
     echo_c "      $(whoami) ALL=(root) NOPASSWD: $(brew --prefix)/bin/yabai --load-sa" "${YELLOW}"
     echo_c
-    echo_c "    Press ENTER to continue" "${WHITE}"
+    echo_c "    Press ENTER to continue" "${YELLOW}"
     read -rn 1
   fi
-  echo_c "  • yabai installed" "${WHITE}"
+  echo_c "  • yabai installed" "${YELLOW}"
   echo_c
 }
 
@@ -735,6 +778,69 @@ function install_skhd() {
   echo_c "Installing skhd..." "${WHITE}"
   echo_c "####################################################################" "${WHITE}"
   skhd --start-service
-  echo_c "  • skhd installed" "${WHITE}"
+  echo_c "  • skhd installed" "${YELLOW}"
+  echo_c
+}
+
+###############################################################################
+# Configure GUI applications.
+#
+# Alfred: https://www.alfredapp.com
+# Firefox: https://www.firefox.com
+# iTerm2: https://iterm2.com
+#
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Execution logging to standard output
+# Returns:
+#   Exits 0 on success, and >0 if an error occurs
+###############################################################################
+function configure_gui_applications() {
+  echo_c "#############################" "${YELLOW}"
+  echo_c "Configure GUI applications..." "${YELLOW}"
+  echo_c "#############################" "${YELLOW}"
+  if [ -d '/Applications/Firefox.app' ]; then
+    echo_c "  • Firefox installed" "${YELLOW}"
+    echo_c "  • To configure Firefox, open the application, then click the user icon to sign in." "${YELLOW}"
+    echo_c
+    echo_c "    Configure extensions (Dark Reader, Firefox Color, LastPass, Vimium)." "${YELLOW}"
+    echo_c
+    echo_c "    Press ENTER to continue" "${YELLOW}"
+    read -rn 1
+  fi
+  if [ -d '/Applications/Alfred 5.app' ]; then
+    echo_c "  • Alfred 5 installed" "${YELLOW}"
+    echo_c "  • To configure Alfred 5, open the application, then click Begin Setup..." "${YELLOW}"
+    echo_c "    Enter your Alfred 5 Powerpack License." "${YELLOW}"
+    echo_c "    Configure macOS permissions." "${YELLOW}"
+    echo_c
+    echo_c "  • Disable Spotlight search." "${YELLOW}"
+    echo_c "    Go to System Settings > Keyboard > Keyboard Shortcuts…. " "${YELLOW}"
+    echo_c "    Under Spotlight, uncheck 'Show Spotlight search'." "${YELLOW}"
+    echo_c "    Set Alfred Hotkey to Command (⌘) Space." "${YELLOW}"
+    echo_c
+    echo_c "  • Set preferences folder." "${YELLOW}"
+    echo_c "    Under Advanced, click 'Set preferences folder...', then" "${YELLOW}"
+    echo_c "    /Users/$(whoami)/nickolashkraus/dotfiles/Alfred" "${YELLOW}"
+    echo_c
+    echo_c "    Press ENTER to continue" "${YELLOW}"
+    read -rn 1
+  fi
+  if [ -d '/Applications/iTerm.app' ]; then
+    echo_c "  • iTerm2 installed" "${YELLOW}"
+    echo_c "  • To load settings from a custom folder, open the application, then" "${YELLOW}"
+    echo_c "    click Settings... > General > Settings" "${YELLOW}"
+    echo_c
+    echo_c "    Check 'Load settings from a custom folder or URL', then add:" "${YELLOW}"
+    echo_c "    /Users/$(whoami)/nickolashkraus/dotfiles/iTerm2" "${YELLOW}"
+    echo_c
+    echo_c "    NOTE: You will need to restart iTerm2 for the changes to take effect." "${YELLOW}"
+    echo_c
+    echo_c "    Press ENTER to continue" "${YELLOW}"
+    read -rn 1
+  fi
   echo_c
 }
