@@ -72,9 +72,8 @@ configure_dock
 install_xcode
 install_homebrew
 install_homebrew_packages
-install_iterm2
 install_oh_my_zsh
-install_vim_plugin_manager
+install_vim_plug
 install_powerline_fonts
 generate_ssh_keys
 set_up_workspace
@@ -85,10 +84,9 @@ install_bash_scripts
 install_dotfiles
 install_vim_plugins
 install_fzf
-install_ycm
 install_yabai
 install_skhd
 
-echo_c "#############################" "${GREEN}"
+echo_c "####################################################################" "${WHITE}"
 echo_c "Setup completed successfully!" "${GREEN}"
-echo_c "#############################" "${GREEN}"
+echo_c "####################################################################" "${WHITE}"
