@@ -151,7 +151,7 @@ function set_hostname() {
     echo_c "ERROR: HOSTNAME must be set." "${RED}"
     exit 1
   fi
-  if [ "$(scutil --get HostName)" != "${HOSTNAME}" ]; then
+  if [ "$(scutil --get HostName 2>/dev/null)" != "${HOSTNAME}" ]; then
     echo_c "  • Setting hostname to ${HOSTNAME}"
     sudo scutil --set HostName "${HOSTNAME}"
   else
@@ -292,7 +292,7 @@ function install_xcode() {
   echo_c "####################################################################" "${WHITE}"
   echo_c "Installing Xcode Developer Tools..." "${WHITE}"
   echo_c "####################################################################" "${WHITE}"
-  if [ ! -x "$(command -v git)" ]; then
+  if ! xcode-select -p &>/dev/null; then
     xcode-select --install
     echo_c "Press ENTER to continue" "${YELLOW}"
     read -rn 1
@@ -321,15 +321,12 @@ function install_homebrew() {
   echo_c "####################################################################" "${WHITE}"
   echo_c "Installing Homebrew..." "${WHITE}"
   echo_c "####################################################################" "${WHITE}"
-  # Suppress stderr, since this command will error if Homebrew is neither
-  # installed nor configured.
-  eval "$(/opt/homebrew/bin/brew shellenv)" >/dev/null 2>&1
-  if [ ! -x "$(command -v brew)" ]; then
+  if [ ! -x "$(command -v /opt/homebrew/bin/brew)" ]; then
     bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    eval "$(brew shellenv)"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
     echo_c "  • Homebrew installed" "${YELLOW}"
   else
-    eval "$(brew shellenv)"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
     echo_c "  • Homebrew already installed" "${GREEN}"
   fi
   echo_c "  • Updating Homebrew..." "${YELLOW}"
@@ -436,6 +433,7 @@ function install_powerline_fonts() {
   echo_c "Installing Powerline fonts..." "${WHITE}"
   echo_c "####################################################################" "${WHITE}"
   if [ ! -e "${HOME}/Library/Fonts/Meslo LG S Regular for Powerline.ttf" ]; then
+    mkdir -p "${HOME}/Library/Fonts"
     fonts_dir="$(mktemp -d)"
     git clone https://github.com/powerline/fonts.git --depth=1 "${fonts_dir}"
     pushd "${fonts_dir}" >/dev/null || exit
@@ -582,13 +580,13 @@ function install_python() {
   export PYENV_ROOT="$HOME/.pyenv"
   command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init -)"
-  if pyenv versions | grep -q "${PYTHON_VERSION}"; then
+  if ! pyenv versions | grep -q "${PYTHON_VERSION}"; then
     echo_c "  • Installing Python ${PYTHON_VERSION}..." "${YELLOW}"
     # '--enable-framework' option is required by YouCompleteMe
     export PYTHON_CONFIGURE_OPTS="--enable-framework"
     pyenv install "${PYTHON_VERSION}"
     pyenv global "${PYTHON_VERSION}"
-    python -m pip install --upgrade pip
+    python -m pip install --upgrade pip >/dev/null 2>&1
     echo_c "  • Python ${PYTHON_VERSION} installed" "${YELLOW}"
   else
     pyenv global "${PYTHON_VERSION}"
@@ -615,10 +613,10 @@ function set_up_virtualenv() {
   echo_c "####################################################################" "${WHITE}"
   eval "$(pyenv init -)"
   eval "$(pyenv virtualenv-init -)"
-  if [ -z "${PYENV_VERSION}" ] || [ "$(pyenv version-name)" != "${PYENV_VERSION}" ]; then
+  if [ -z "${PYENV_VERSION:-}" ] || [ "$(pyenv version-name)" != "${PYENV_VERSION}" ]; then
     echo_c "  • Setting up 'default' virtual environment..." "${YELLOW}"
     pyenv virtualenv "${PYTHON_VERSION}" default
-    python -m pip install --upgrade pip
+    python -m pip install --upgrade pip >/dev/null 2>&1
     echo_c "  • 'default' virtual environment created" "${YELLOW}"
   else
     pyenv activate default >/dev/null 2>&1
@@ -816,6 +814,8 @@ function configure_gui_applications() {
     echo_c "    To configure Alfred 5, open the application, then click Begin Setup…" "${YELLOW}"
     echo_c "    Enter your Alfred 5 Powerpack License." "${YELLOW}"
     echo_c "    Configure macOS permissions." "${YELLOW}"
+    echo_c "      - Request Accessibility access" "${YELLOW}"
+    echo_c "      - Open macOS Full Disk Access preferences" "${YELLOW}"
     echo_c
     echo_c "    Disable Spotlight search." "${YELLOW}"
     echo_c "    Go to System Settings > Keyboard > Keyboard Shortcuts…. " "${YELLOW}"
@@ -836,6 +836,7 @@ function configure_gui_applications() {
     echo_c
     echo_c "    Check 'Load settings from a custom folder or URL', then add:" "${YELLOW}"
     echo_c "    /Users/$(whoami)/nickolashkraus/dotfiles/iTerm2" "${YELLOW}"
+    echo_c "    Then set 'Save changes' to 'Automatically'." "${YELLOW}"
     echo_c
     echo_c "    NOTE: You will need to restart iTerm2 for the changes to take effect." "${YELLOW}"
     echo_c
