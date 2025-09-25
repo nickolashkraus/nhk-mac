@@ -814,7 +814,7 @@ function configure_gui_applications() {
     echo_c "    To configure Alfred 5, open the application, then click Begin Setup…" "${YELLOW}"
     echo_c "    Enter your Alfred 5 Powerpack License." "${YELLOW}"
     echo_c "    Configure macOS permissions." "${YELLOW}"
-    echo_c "      - Request Accessibility access" "${YELLOW}"
+    echo_c "      - Request macOS Accessibility access" "${YELLOW}"
     echo_c "      - Open macOS Full Disk Access preferences" "${YELLOW}"
     echo_c
     echo_c "    Disable Spotlight search." "${YELLOW}"
@@ -836,7 +836,7 @@ function configure_gui_applications() {
     echo_c
     echo_c "    Check 'Load settings from a custom folder or URL', then add:" "${YELLOW}"
     echo_c "    /Users/$(whoami)/nickolashkraus/dotfiles/iTerm2" "${YELLOW}"
-    echo_c "    Then set 'Save changes' to 'Automatically'." "${YELLOW}"
+    echo_c "    Click 'Copy', then set 'Save changes' to 'Automatically'." "${YELLOW}"
     echo_c
     echo_c "    NOTE: You will need to restart iTerm2 for the changes to take effect." "${YELLOW}"
     echo_c
