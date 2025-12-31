@@ -187,6 +187,8 @@ function configure_keyboard() {
   defaults write -g InitialKeyRepeat -int 13
   echo_c "  • Setting key repeat to 1 (15 ms)"
   defaults write -g KeyRepeat -int 1
+  echo_c "  • Disabling automatic period substitution"
+  defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
   echo_c "  • Rebind Caps Lock to Control:" "${YELLOW}"
   echo_c
   echo_c "    Go to System Settings > Keyboard > Keyboard Shortcuts…. " "${YELLOW}"
@@ -270,7 +272,8 @@ function configure_system_settings() {
   defaults write -g AppleAquaColorVariant -int 6
   echo_c "  • Setting highlight color to #282828"
   defaults write -g AppleHighlightColor -string "0.156863 0.156863 0.156863 Other"
-  echo_c
+  echo_c "  • Setting screen capture location to ~/Downloads"
+  defaults write com.apple.screencapture location ~/Downloads
 }
 
 ###############################################################################
@@ -825,6 +828,17 @@ function configure_gui_applications() {
     echo_c "    Set preferences folder." "${YELLOW}"
     echo_c "    Under Advanced, click 'Set preferences folder…', then add:" "${YELLOW}"
     echo_c "    /Users/$(whoami)/nickolashkraus/dotfiles/Alfred" "${YELLOW}"
+    echo_c
+    echo_c "    Press ENTER to continue" "${YELLOW}"
+    read -rn 1
+  fi
+  if [ -d '/Applications/Google Chrome.app' ]; then
+    echo_c "  • Chrome installed" "${YELLOW}"
+    echo_c "    To configure Chrome, open the application, then click the user icon to sign in." "${YELLOW}"
+    echo_c
+    echo_c "    Configure extensions (Dark Reader, LastPass, Vimium)." "${YELLOW}"
+    echo_c "    To configure the theme, go to chrome://extensions, then click 'Load unpacked'." "${YELLOW}"
+    echo_c "    Add: /Users/$(whoami)/nickolashkraus/dotfiles/Chrome/theme/" "${YELLOW}"
     echo_c
     echo_c "    Press ENTER to continue" "${YELLOW}"
     read -rn 1
