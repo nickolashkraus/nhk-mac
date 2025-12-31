@@ -833,12 +833,12 @@ function configure_gui_applications() {
     read -rn 1
   fi
   if [ -d '/Applications/Google Chrome.app' ]; then
-    echo_c "  • Chrome installed" "${YELLOW}"
-    echo_c "    To configure Chrome, open the application, then click the user icon to sign in." "${YELLOW}"
+    echo_c "  • Google Chrome installed" "${YELLOW}"
+    echo_c "    To configure Google Chrome, open the application, then click the user icon to sign in." "${YELLOW}"
     echo_c
     echo_c "    Configure extensions (Dark Reader, LastPass, Vimium)." "${YELLOW}"
     echo_c "    To configure the theme, go to chrome://extensions, then click 'Load unpacked'." "${YELLOW}"
-    echo_c "    Add: /Users/$(whoami)/nickolashkraus/dotfiles/Chrome/theme/" "${YELLOW}"
+    echo_c "    Add: /Users/$(whoami)/nickolashkraus/dotfiles/Google Chrome/theme/" "${YELLOW}"
     echo_c
     echo_c "    Press ENTER to continue" "${YELLOW}"
     read -rn 1
