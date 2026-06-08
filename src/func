@@ -811,6 +811,17 @@ function configure_gui_applications() {
     echo_c
     echo_c "    Press ENTER to continue" "${YELLOW}"
     read -rn 1
+
+    firefox_profile=$(ls -d "${HOME}/Library/Application Support/Firefox/Profiles"/*.default-release 2>/dev/null | head -n 1)
+    if [ -n "${firefox_profile}" ] && [ -d "${firefox_profile}" ]; then
+      mkdir -p "${firefox_profile}/chrome"
+      rm -f "${firefox_profile}/chrome/userChrome.css"
+      ln -s "${HOME}/nickolashkraus/dotfiles/master/Firefox/userChrome.css" "${firefox_profile}/chrome/userChrome.css"
+      echo_c "  • userChrome.css linked into ${firefox_profile}/chrome/" "${YELLOW}"
+      echo_c "    In about:config, set toolkit.legacyUserProfileCustomizations.stylesheets=true, then restart Firefox." "${YELLOW}"
+    else
+      echo_c "  • Firefox default-release profile not found; skipping userChrome.css symlink" "${RED}"
+    fi
   fi
   if [ -d '/Applications/Alfred 5.app' ]; then
     echo_c "  • Alfred 5 installed" "${YELLOW}"
