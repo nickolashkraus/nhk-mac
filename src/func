@@ -274,6 +274,8 @@ function configure_system_settings() {
   defaults write -g AppleHighlightColor -string "0.156863 0.156863 0.156863 Other"
   echo_c "  • Setting screen capture location to ~/Downloads"
   defaults write com.apple.screencapture location ~/Downloads
+  echo_c "  • Restarting SystemUIServer to apply settings"
+  killall SystemUIServer
 }
 
 ###############################################################################
