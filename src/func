@@ -230,8 +230,8 @@ function configure_dock() {
   defaults write com.apple.dock persistent-others -array
   echo_c "  • Removing recent apps"
   defaults write com.apple.dock recent-apps -array
-  echo_c "  • Disabling recent apps"
-  defaults write com.apple.dock show-recent -bool false
+  echo_c "  • Disabling suggested and recent apps"
+  defaults write com.apple.dock show-recents -bool false
   echo_c "  • Setting app size to 32"
   defaults write com.apple.dock tilesize -int 32
   killall Dock
